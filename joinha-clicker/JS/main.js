@@ -186,14 +186,16 @@ prestigebutton.addEventListener("click", function() {
 // Update Golde Joinha Earn
 
 // Atualiza o quanto o jogador ganharia se prestigiar
-let earn = 0n;
-let temp_joinhas = GameData.joinhas;
-let temp_price = GameData.golden_joinha_price;
+function update_golden_joinha_earn() {
+    let earn = 0n;
+    let temp_joinhas = GameData.joinhas;
+    let temp_price = GameData.golden_joinha_price;
 
-while (temp_joinhas >= temp_price) {
-    temp_joinhas -= temp_price;
-    temp_price = (temp_price * 1006n) / 1000n + 1000n;
-    earn += 1n;
+    while (temp_joinhas >= temp_price) {
+        temp_joinhas -= temp_price;
+        temp_price = (temp_price * 1006n) / 1000n + 1000n;
+        earn += 1n;
+    }
 }
 
 // Update Screen
