@@ -4,7 +4,8 @@ window.GameData = {
   click_power: 1n,
   upgrade_1_cost: 10n,
   joinhas_per_second: 0n,
-  upgrade_2_cost: 25n
+  upgrade_2_cost: 25n,
+  upgrade_3_cost: 10n
 };
 
 // ===== Constantes =====
@@ -13,6 +14,7 @@ const upgradesMenu = document.getElementById('UpgradesMenu');
 const upgradesMenuCloseButton = document.getElementById('CloseUpgradesButton');
 const upgrade_1_button = document.getElementById('Upgrade_1_Button');
 const upgrade_2_button = document.getElementById('Upgrade_2_Button');
+const upgrade_3_button = document.getElementById("Upgrade_3_Button");
 
 // Shorting to: K, M, B, T...
 function shortedBigInt(num) {
@@ -72,12 +74,30 @@ upgrade_2_button.addEventListener("click", function() {
 	}
 });
 
+// Upgrade 3:
+
+upgrade_3_button.addEventListener("click", function() {
+	if (GameData.joinhas >= GameData.upgrade_3_cost) {
+		GameData.joinhas -= GameData.upgrade_3_cost;
+		GameData.upgrade_1_cost /= 4n; GameData.upgrade_2_cost /= 4n
+		GameData.upgrade_3_cost *= 25n
+		update_screen()
+	}
+	if (GameData.upgrade_1_cost <= 1n) {
+		GameData.upgrade_1_cost = 2n;
+	}
+	if (GameData.upgrade_2_cost <= 1n) {
+		GameData.upgrade_2_cost = 2n;
+	}
+});
+
 // Update Screen
 function update_screen() {
   document.getElementById("JoinhaLabel").innerText = "Joinhas: " + shortedBigInt(GameData.joinhas);
   document.getElementById("Upgrade_1_Label").innerText = "Clicks give +1 Joinhas (Cost: " + shortedBigInt(GameData.upgrade_1_cost) + " Joinhas)"
   document.getElementById("Upgrade_2_Label").innerText = "+1 Joinhas per second (Cost: " + shortedBigInt(GameData.upgrade_2_cost) + " Joinhas)"
   document.getElementById("joinhas_per_second_label").innerText = "Joinhas per second: " + shortedBigInt(GameData.joinhas_per_second)
+  document.getElementById("Upgrade_3_Label").innerText = "Upgrades 1 and 2 at 1/4 of their prices (Cost: " + shortedBigInt(GameData.upgrade_3_cost) + " Joinhas)"
   GameData.joinhas += GameData.joinhas_per_second;
 }
 
@@ -101,6 +121,7 @@ function load_game() {
     GameData.upgrade_1_cost = BigInt(GameData.upgrade_1_cost ?? 10n);
     GameData.joinhas_per_second = BigInt(GameData.joinhas_per_second ?? 0n);
     GameData.upgrade_2_cost = BigInt(GameData.upgrade_2_cost ?? 25n);
+    GameData.upgrade_3_cost = BigInt(GameData.upgrade_3_cost ?? 10n);
   }
   update_screen();
 }
