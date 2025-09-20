@@ -88,6 +88,7 @@ body {
         background-size: cover;
         background-position: center;
         border: none;
+        border-radius: 5px;
 
         position: absolute;
         top: 125px;
@@ -111,6 +112,7 @@ body {
         background-size: cover;
         background-position: center;
         border: none;
+        border-radius: 5px;
 
         position: absolute;
         top: 200px;
@@ -130,4 +132,27 @@ body {
 	position: absolute;
 	top: 400px;
 	left: 125px;
+}
+
+/* Upgrade 3 Button*/
+#Upgrade_3_Button {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/arrow.png');
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 275px;
+        left: 10px;
+}
+/* Label*/
+#Upgrade_3_Label {
+	font-size: 12px;
+        position: absolute;
+        top: 287px;
+        left: 90px;
 }
