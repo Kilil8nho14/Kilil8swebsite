@@ -92,7 +92,7 @@ upgradesMenuButton.addEventListener('click', openupgradesmenu);
 upgrade_1_button.addEventListener("click", function() {
 	if (GameData.joinhas >= GameData.upgrade_1_cost) {
 		GameData.joinhas -= GameData.upgrade_1_cost;
-		GameData.click_power += 1n * (GameData.golden_joinhas / 100 + 1);
+		GameData.click_power += 1n * (GameData.golden_joinhas / 100n + 1n);
 		GameData.upgrade_1_cost = (GameData.upgrade_1_cost * 16n) / 10n;
 		update_screen();
 	}
@@ -102,7 +102,7 @@ upgrade_1_button.addEventListener("click", function() {
 upgrade_2_button.addEventListener("click", function() {
 	if (GameData.joinhas >= GameData.upgrade_2_cost) {
 		GameData.joinhas -= GameData.upgrade_2_cost;
-		GameData.joinhas_per_second += 1n * (GameData.golden_joinhas / 100 + 1);
+		GameData.joinhas_per_second += 1n * (GameData.golden_joinhas / 100n + 1n);
 		GameData.upgrade_2_cost = (GameData.upgrade_2_cost * 15n) / 10n;
 		update_screen();
 	}
@@ -133,7 +133,7 @@ upgrade_4_button.addEventListener("click", function() {
 	if (GameData.joinhas >= 10480000n && GameData.upgrade_4_cap == 0) {
 		GameData.joinhas -= 10480000n;
 		GameData.upgrade_4_cap = 1;
-		GameData.click_power *= 25n * (GameData.golden_joinhas / 100 + 1);
+		GameData.click_power *= 25n * (GameData.golden_joinhas / 100n + 1n);
 		document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)"
 		update_screen();
 	}
@@ -165,7 +165,8 @@ prestigebutton.addEventListener("click", function() {
 
                     // Reset de Joinhas e upgrades
                     GameData.joinhas = 0n;
-                    GameData.click_power = 1n;
+                    GameData.click_power = 1n * (GameData.golden_joinhas / 100n) + 1n;
+                    GameData.joinhas_per_second = 0n;
                     GameData.upgrade_1_cost = 10n;
                     GameData.upgrade_2_cost = 25n;
                     GameData.upgrade_3_cost = 10n;
@@ -185,19 +186,14 @@ prestigebutton.addEventListener("click", function() {
 // Update Golde Joinha Earn
 
 // Atualiza o quanto o jogador ganharia se prestigiar
-function update_golden_joinha_earn() {
-    let earn = 0n;
-    let temp_joinhas = GameData.joinhas;
-    let price = 1000n; // preço inicial
-    let increment = 1006n; // incremento da diferença entre o próximo preço e o atual
+let earn = 0n;
+let temp_joinhas = GameData.joinhas;
+let temp_price = GameData.golden_joinha_price;
 
-    while (temp_joinhas >= price) {
-        earn += 1n;
-        price += increment; // vai para o próximo preço
-        increment += 12n; // ou outro valor, dependendo da sequência que você quer
-    }
-
-    GameData.golden_joinha_earn = earn;
+while (temp_joinhas >= temp_price) {
+    temp_joinhas -= temp_price;
+    temp_price = (temp_price * 1006n) / 1000n + 1000n;
+    earn += 1n;
 }
 
 // Update Screen
@@ -207,10 +203,67 @@ function update_screen() {
   document.getElementById("Upgrade_2_Label").innerText = "+1 Joinhas per second (Cost: " + shortedBigInt(GameData.upgrade_2_cost) + " Joinhas)"
   document.getElementById("joinhas_per_second_label").innerText = "Joinhas per second: " + shortedBigInt(GameData.joinhas_per_second)
   document.getElementById("Upgrade_3_Label").innerText = "Upgrades 1 and 2 at 1/4 of their prices (Cost: " + shortedBigInt(GameData.upgrade_3_cost) + " Joinhas)"
+  document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortedBigInt(GameData.golden_joinhas)
   GameData.joinhas += GameData.joinhas_per_second;
 }
 
 // Save Game
+function save_game() {
+  localStorage.setItem(
+    "game_save",
+    JSON.stringify(GameData, (_, v) => (typeof v === "bigint" ? v.toString() : v))
+  );
+}
+
+// Load Game
+function save_game() {
+  localStorage.setItem(
+    "game_save",
+    JSON.stringify(GameData, (_, v) => (typeof v === "bigint" ? v.toString() : v))
+  );
+}
+
+// Load Game
+function save_game() {
+  localStorage.setItem(
+    "game_save",
+    JSON.stringify(GameData, (_, v) => (typeof v === "bigint" ? v.toString() : v))
+  );
+}
+
+// Load Game
+function save_game() {
+  localStorage.setItem(
+    "game_save",
+    JSON.stringify(GameData, (_, v) => (typeof v === "bigint" ? v.toString() : v))
+  );
+}
+
+// Load Game
+function save_game() {
+  localStorage.setItem(
+    "game_save",
+    JSON.stringify(GameData, (_, v) => (typeof v === "bigint" ? v.toString() : v))
+  );
+}
+
+// Load Game
+function save_game() {
+  localStorage.setItem(
+    "game_save",
+    JSON.stringify(GameData, (_, v) => (typeof v === "bigint" ? v.toString() : v))
+  );
+}
+
+// Load Game
+function save_game() {
+  localStorage.setItem(
+    "game_save",
+    JSON.stringify(GameData, (_, v) => (typeof v === "bigint" ? v.toString() : v))
+  );
+}
+
+// Load Game
 function save_game() {
   localStorage.setItem(
     "game_save",
