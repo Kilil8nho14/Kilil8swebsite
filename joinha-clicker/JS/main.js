@@ -1,8 +1,15 @@
 // Global Dictionary
 window.GameData = {
   joinhas: 0n,
-  click_power: 1n
+  click_power: 1n,
+  upgrade_1_cost: 10n
 };
+
+// ===== Constantes =====
+const upgradesMenuButton = document.getElementById('UpgradesMenuButton');
+const upgradesMenu = document.getElementById('UpgradesMenu');
+const upgradesMenuCloseButton = document.getElementById('CloseUpgradesButton')
+const upgrade_1_button = document.getElementById('Upgrade_1_Button')
 
 // Shorting to: K, M, B, T...
 function shortedBigInt(num) {
@@ -31,10 +38,31 @@ function joinhaclick() {
   update_screen();
 }
 
+// Opens and closes the upgrades menu
+function openupgradesmenu() {
+	upgradesMenu.style.display = 'block';
+}
+function closeupgradesmenu() {
+	upgradesMenu.style.display = 'none';
+}
+upgradesMenuCloseButton.addEventListener('click', closeupgradesmenu);
+upgradesMenuButton.addEventListener('click', openupgradesmenu);
+
+// Upgrades:
+// Upgrade 1:
+upgrade_1_button.addEventListener("click", function() {
+	if (GameData.joinhas >= GameData.upgrade_1_cost) {
+		GameData.joinhas -= GameData.upgrade_1_cost;
+		GameData.click_power += 1n;
+		GameData.upgrade_1_cost = (GameData.upgrade_1_cost * 16n) / 10n;
+		update_screen();
+	}
+});
+
 // Update Screen
 function update_screen() {
-  document.getElementById("JoinhaLabel").innerText =
-    "Joinhas: " + shortedBigInt(GameData.joinhas);
+  document.getElementById("JoinhaLabel").innerText = "Joinhas: " + shortedBigInt(GameData.joinhas);
+  document.getElementById("Upgrade_1_Label").innerText = "Clicks give +1 Joinhas (Cost: " + shortedBigInt(GameData.upgrade_1_cost) + " Joinhas)"
 }
 
 // Save Game
@@ -52,8 +80,9 @@ function load_game() {
     GameData = JSON.parse(data);
 
     // Converte de volta os que são BigInt
-    GameData.joinhas = BigInt(GameData.joinhas);
-    GameData.click_power = BigInt(GameData.click_power);
+    GameData.joinhas = BigInt(GameData.joinhas ?? 0n);
+    GameData.click_power = BigInt(GameData.click_power ?? 1n);
+    GameData.upgrade_1_cost = BigInt(GameData.upgrade_1_cost ?? 10n);
   }
   update_screen();
 }
