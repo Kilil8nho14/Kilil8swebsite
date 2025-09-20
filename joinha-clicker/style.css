@@ -65,8 +65,8 @@ body {
 /* ===== Botão de fechar do menu ===== */
 #CloseUpgradesButton {
     cursor: pointer;
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     background-image: url('assets/arrow.png');
     background-size: cover;
     background-position: center;
