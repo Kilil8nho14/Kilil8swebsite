@@ -1,11 +1,15 @@
 // Global Dictionary
 window.GameData = {
   joinhas: 0n,
+  golden_joinhas: 0n,
   click_power: 1n,
   upgrade_1_cost: 10n,
   joinhas_per_second: 0n,
   upgrade_2_cost: 25n,
-  upgrade_3_cost: 10n
+  upgrade_3_cost: 10n,
+  upgrade_4_cap: 0,
+  golden_joinha_earn: 0n,
+  golden_joinha_price: 1000n
 };
 
 // ===== Constantes =====
@@ -15,6 +19,11 @@ const upgradesMenuCloseButton = document.getElementById('CloseUpgradesButton');
 const upgrade_1_button = document.getElementById('Upgrade_1_Button');
 const upgrade_2_button = document.getElementById('Upgrade_2_Button');
 const upgrade_3_button = document.getElementById("Upgrade_3_Button");
+const upgrade_4_button = document.getElementById("Upgrade_4_Button");
+const prestigemenubutton = document.getElementById("PrestigeMenuButton");
+const prestigemenu = document.getElementById("PrestigeMenu");
+const closeprestigemenubutton = document.getElementById("ClosePrestigeMenu");
+const prestigebutton = document.getElementById("PrestigeButton");
 
 // Shorting to: K, M, B, T...
 function shortedBigInt(num) {
@@ -35,6 +44,31 @@ function shortedBigInt(num) {
     const remainder = (num % divisor) * 100n / divisor; // 2 casas
 
     return whole.toString() + "." + remainder.toString().padStart(2, "0") + suffixes[suffixIndex];
+}
+
+// Confirm Popup Function
+function showConfirm(message, callback) {
+    const popup = document.createElement("div");
+    popup.style = `
+        position: fixed; top:0; left:0; width:100%; height:100%;
+        background: rgba(0,0,0,0.5); display:flex;
+        justify-content:center; align-items:center; z-index:9999;
+    `;
+    const box = document.createElement("div");
+    box.style = `
+        background:#fff; padding:20px; border-radius:10px; text-align:center;
+    `;
+    box.innerHTML = `<p>${message}</p>`;
+    const okBtn = document.createElement("button");
+    okBtn.textContent = "OK";
+    okBtn.onclick = () => { document.body.removeChild(popup); callback(true); };
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "Cancelar";
+    cancelBtn.onclick = () => { document.body.removeChild(popup); callback(false); };
+    box.appendChild(okBtn);
+    box.appendChild(cancelBtn);
+    popup.appendChild(box);
+    document.body.appendChild(popup);
 }
 
 // Click Function
@@ -58,7 +92,7 @@ upgradesMenuButton.addEventListener('click', openupgradesmenu);
 upgrade_1_button.addEventListener("click", function() {
 	if (GameData.joinhas >= GameData.upgrade_1_cost) {
 		GameData.joinhas -= GameData.upgrade_1_cost;
-		GameData.click_power += 1n;
+		GameData.click_power += 1n * (GameData.golden_joinhas / 100 + 1);
 		GameData.upgrade_1_cost = (GameData.upgrade_1_cost * 16n) / 10n;
 		update_screen();
 	}
@@ -68,7 +102,7 @@ upgrade_1_button.addEventListener("click", function() {
 upgrade_2_button.addEventListener("click", function() {
 	if (GameData.joinhas >= GameData.upgrade_2_cost) {
 		GameData.joinhas -= GameData.upgrade_2_cost;
-		GameData.joinhas_per_second += 1n;
+		GameData.joinhas_per_second += 1n * (GameData.golden_joinhas / 100 + 1);
 		GameData.upgrade_2_cost = (GameData.upgrade_2_cost * 15n) / 10n;
 		update_screen();
 	}
@@ -81,15 +115,90 @@ upgrade_3_button.addEventListener("click", function() {
 		GameData.joinhas -= GameData.upgrade_3_cost;
 		GameData.upgrade_1_cost /= 4n; GameData.upgrade_2_cost /= 4n
 		GameData.upgrade_3_cost *= 25n
-		update_screen()
+		update_screen();
 	}
 	if (GameData.upgrade_1_cost <= 1n) {
 		GameData.upgrade_1_cost = 2n;
+		update_screen();
 	}
 	if (GameData.upgrade_2_cost <= 1n) {
 		GameData.upgrade_2_cost = 2n;
+		update_screen();
 	}
 });
+
+// Upgrade 4:
+
+upgrade_4_button.addEventListener("click", function() {
+	if (GameData.joinhas >= 10480000n && GameData.upgrade_4_cap == 0) {
+		GameData.joinhas -= 10480000n;
+		GameData.upgrade_4_cap = 1;
+		GameData.click_power *= 25n * (GameData.golden_joinhas / 100 + 1);
+		document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)"
+		update_screen();
+	}
+});
+
+// Opens Prestige Menu
+prestigemenubutton.addEventListener("click", function() {
+	prestigemenu.style.display = "block";
+});
+// Closes Prestige Menu
+closeprestigemenubutton.addEventListener("click", function() {
+	prestigemenu.style.display = "none";
+});
+//Does the popup
+prestigebutton.addEventListener("click", function() {
+    showConfirm(
+        `Do you want to prestige? This will give: ${GameData.golden_joinha_earn} Golden Joinhas.`,
+        function(result) {
+            if (result) {
+                // Só prestigia se tiver pelo menos 1
+                if (GameData.golden_joinha_earn >= 1n) {
+                    // Dá os Golden Joinhas
+                    GameData.golden_joinhas += GameData.golden_joinha_earn;
+
+                    // Atualiza o preço real (com base na quantidade que podia comprar)
+                    for (let i = 0n; i < GameData.golden_joinha_earn; i++) {
+                        GameData.golden_joinha_price = (GameData.golden_joinha_price * 1006n) / 1000n + 1000n;
+                    }
+
+                    // Reset de Joinhas e upgrades
+                    GameData.joinhas = 0n;
+                    GameData.click_power = 1n;
+                    GameData.upgrade_1_cost = 10n;
+                    GameData.upgrade_2_cost = 25n;
+                    GameData.upgrade_3_cost = 10n;
+                    GameData.upgrade_4_cap = 0;
+
+                    // Zera o "quanto ganharia"
+                    GameData.golden_joinha_earn = 0n;
+
+                    update_screen();
+                }
+            }
+            // se clicou Cancel, não faz nada
+        }
+    );
+});
+
+// Update Golde Joinha Earn
+
+// Atualiza o quanto o jogador ganharia se prestigiar
+function update_golden_joinha_earn() {
+    let earn = 0n;
+    let temp_joinhas = GameData.joinhas;
+    let price = 1000n; // preço inicial
+    let increment = 1006n; // incremento da diferença entre o próximo preço e o atual
+
+    while (temp_joinhas >= price) {
+        earn += 1n;
+        price += increment; // vai para o próximo preço
+        increment += 12n; // ou outro valor, dependendo da sequência que você quer
+    }
+
+    GameData.golden_joinha_earn = earn;
+}
 
 // Update Screen
 function update_screen() {
@@ -117,11 +226,15 @@ function load_game() {
 
     // Converte de volta os que são BigInt
     GameData.joinhas = BigInt(GameData.joinhas ?? 0n);
-    GameData.click_power = BigInt(GameData.click_power ?? 1n);
+    GameData.golden_joinhas = BigInt(GameData.golden_joinhas ?? 0n);
+    GameData.click_power = (BigInt(GameData.click_power ?? 1n) * ((GameData.golden_joinhas / 100n) + 1n))
     GameData.upgrade_1_cost = BigInt(GameData.upgrade_1_cost ?? 10n);
     GameData.joinhas_per_second = BigInt(GameData.joinhas_per_second ?? 0n);
     GameData.upgrade_2_cost = BigInt(GameData.upgrade_2_cost ?? 25n);
     GameData.upgrade_3_cost = BigInt(GameData.upgrade_3_cost ?? 10n);
+    GameData.upgrade_4_cap = parseInt(GameData.upgrade_4_cap ?? 0);
+    GameData.golden_joinha_price = BigInt(GameData.golden_joinha_price ?? 1000n);
+    GameData.golden_joinha_earn = BigInt(GameData.golden_joinha_earn ?? 0n);
   }
   update_screen();
 }
@@ -130,11 +243,17 @@ function load_game() {
 function onesecondtimer() {
   setInterval(save_game, 1000);
   setInterval(update_screen, 1000);
+  setInterval(update_golden_joinha_earn, 1000)
 }
 
 // Setup inicial
 window.onload = function () {
   document.getElementById("JoinhaButton").addEventListener("click", joinhaclick);
+  if (GameData.upgrade_4_cap == 0) {
+  	document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: 10.48M)"
+} else {
+  	document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)"
+}
   load_game();
   onesecondtimer();
 };
