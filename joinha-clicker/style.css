@@ -87,7 +87,7 @@ body {
         background-image: url('assets/arrow.png');
         background-size: cover;
         background-position: center;
-        border: default;
+        border: none;
 
         position: absolute;
         top: 125px;
@@ -110,7 +110,7 @@ body {
         background-image: url('assets/arrow.png');
         background-size: cover;
         background-position: center;
-        border: default;
+        border: none;
 
         position: absolute;
         top: 200px;
