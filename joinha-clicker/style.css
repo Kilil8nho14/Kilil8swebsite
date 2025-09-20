@@ -23,6 +23,7 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-color: #404040;
     cursor: pointer;
 }
 
@@ -55,8 +56,8 @@ body {
     color: #fff;
     padding: 40px 30px; /* mais espaço interno */
     border-radius: 10px;
-    height: 500px;
-    width: 300px; /* largura fixa maior */
+    height: 660px;
+    width: 310px; /* largura fixa maior */
     max-width: 90%; /* responsivo em telas pequenas */
     text-align: center;
     z-index: 1000;
@@ -97,9 +98,9 @@ body {
 
 /* Label of the first upgrade */
 #Upgrade_1_Label {
-        font-size: 12px;
+        font-size: 15px;
         position: absolute;
-        top: 137px;
+        top: 125px;
         left: 90px;
 }
 
@@ -121,9 +122,9 @@ body {
 
 /* Label of the second upgrade */
 #Upgrade_2_Label {
-        font-size: 12px;
+        font-size: 15px;
         position: absolute;
-        top: 212px;
+        top: 200px;
         left: 90px;
 }
 /* Joinhas Per Second Label */
@@ -153,6 +154,93 @@ body {
 #Upgrade_3_Label {
 	font-size: 12px;
         position: absolute;
-        top: 287px;
+        top: 280px;
         left: 90px;
+}
+
+/* Upgrade 4 Button*/
+#Upgrade_4_Button {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/arrow.png');
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 344px;
+        left: 10px;
+}
+/* Label*/
+#Upgrade_4_Label {
+	font-size: 15px;
+    position: absolute;
+    top: 342px;
+    left: 90px;
+}
+
+/* Prestige Menu Button */
+#PrestigeMenuButton {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/golden_joinha.png');
+    background-size: cover;
+    background-position: center;
+    background-color: #000000;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+}
+/* Prestige Menu */
+#PrestigeMenu {
+	display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #000000;
+    padding: 40px 30px;
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    z-index: 1000;
+}
+/* Closing The Prestige Menu */
+#ClosePrestigeMenu {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+    transform: rotate(-90deg);
+
+    position: absolute;
+    top: 100px;
+    left: 10px;
+}
+
+/* Prestige Button */
+#PrestigeButton {
+	cursor: pointer;
+    width: 120px;
+    height: 120px;
+    background-image: url('assets/golden_joinha.png');
+    background-size: cover;
+    background-position: center;
+    background-color: #ADD8E6;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 350px;
+    left: 150px;
 }
