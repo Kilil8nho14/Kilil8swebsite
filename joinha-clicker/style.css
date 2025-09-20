@@ -4,12 +4,12 @@ body {
 
 /* Joinha Label */
 #JoinhaLabel {
-	font-size:30px;
+        font-size:30px;
     position: absolute;
     top: 235px;
     left: 125px;
 }
-    
+
 /* Joinha Button */
 #JoinhaButton {
     position: absolute;
@@ -81,22 +81,53 @@ body {
 
 /* First upgrade button */
 #Upgrade_1_Button {
-	cursor: pointer;
-	width: 60px;
-	height: 60px;
-	background-image: url('assets/arrow.png');
-	background-size: cover;
-	background-position: center;
-	border: default;
-	
-	position: absolute;
-	top: 125px;
-	left: 10px;
+        cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/arrow.png');
+        background-size: cover;
+        background-position: center;
+        border: default;
+
+        position: absolute;
+        top: 125px;
+        left: 10px;
 }
 
 /* Label of the first upgrade */
 #Upgrade_1_Label {
-	font-size: 12px;
+        font-size: 12px;
+        position: absolute;
+        top: 137px;
+        left: 90px;
+}
+
+/* Button of the second upgrade */
+#Upgrade_2_Button {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/arrow.png');
+        background-size: cover;
+        background-position: center;
+        border: default;
+
+        position: absolute;
+        top: 200px;
+        left: 10px;
+}
+
+/* Label of the second upgrade */
+#Upgrade_2_Label {
+        font-size: 12px;
+        position: absolute;
+        top: 212px;
+        left: 90px;
+}
+/* Joinhas Per Second Label */
+#joinhas_per_second_label {
+	font-size: 15px;
 	position: absolute;
-	top: 137px;
-	left: 90px;
+	top: 400px;
+	left: 125px;
+}
