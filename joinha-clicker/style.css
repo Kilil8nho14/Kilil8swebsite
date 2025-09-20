@@ -244,3 +244,10 @@ body {
     top: 350px;
     left: 150px;
 }
+/* Golden Joinha Label */
+#GoldenJoinhaLabel {
+	font-size: 15px;
+    position: absolute;
+    top: 465px;
+    left: 140px;
+}
