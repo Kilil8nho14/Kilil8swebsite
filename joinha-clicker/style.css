@@ -1,3 +1,102 @@
 body {
-    background-color: #808080;
+    background-color: #505050;
 }
+
+/* Joinha Label */
+#JoinhaLabel {
+	font-size:30px;
+    position: absolute;
+    top: 235px;
+    left: 125px;
+}
+    
+/* Joinha Button */
+#JoinhaButton {
+    position: absolute;
+    top: 300px;
+    left: 145px;
+    width: 100px;
+    height: 100px;
+    border: none;
+    border-radius: 10px;
+    background-image: url('assets/joinha.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+/* UpgradesMenu Button */
+#UpgradesMenuButton {
+    position: fixed;   /* fixa na tela */
+    bottom: 15px;      /* 15px da borda inferior */
+    right: 15px;       /* 15px da borda direita */
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: block;    /* garante que width/height funcionem */
+
+    background-image: url('assets/arrow.png'); /* ajuste o caminho */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #4caf50; /* fallback se imagem não carregar */
+}
+/* ===== Menu de Upgrades ===== */
+#UpgradesMenu {
+    display: none; /* começa escondido */
+    position: fixed; /* fixa na tela, não empurra outros elementos */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333; /* cinza escuro */
+    color: #fff;
+    padding: 40px 30px; /* mais espaço interno */
+    border-radius: 10px;
+    height: 500px;
+    width: 300px; /* largura fixa maior */
+    max-width: 90%; /* responsivo em telas pequenas */
+    text-align: center;
+    z-index: 1000;
+}
+
+/* ===== Botão de fechar do menu ===== */
+#closeUpgradesButton {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+    transform: rotate(-90deg);
+
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+/* First upgrade button */
+#Upgrade_1_Button {
+	cursor: pointer;
+	width: 60px;
+	height: 60px;
+	background-image: url('assets/arrow.png');
+	background-size: cover;
+	background-position: center;
+	border: default;
+	
+	position: absolute;
+	top: 125px;
+	left: 10px;
+}
+
+/* Label of the first upgrade */
+#Upgrade_1_Label {
+	font-size: 12px;
+	position: absolute;
+	top: 137px;
+	left: 90px;
