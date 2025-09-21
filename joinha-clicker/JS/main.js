@@ -275,7 +275,7 @@ function load_game() {
 
 // Timer
 function onesecondtimer() {
-  setInterval(save_game, 1000);
+  setInterval(save_game, 5000);
   setInterval(update_screen, 1000);
   setInterval(update_golden_joinha_earn, 1000);
 }
