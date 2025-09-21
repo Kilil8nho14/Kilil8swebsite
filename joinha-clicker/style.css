@@ -154,7 +154,7 @@ body {
 #Upgrade_3_Label {
 	font-size: 12px;
         position: absolute;
-        top: 280px;
+        top: 275px;
         left: 90px;
 }
 
@@ -170,14 +170,14 @@ body {
         border-radius: 5px;
 
         position: absolute;
-        top: 344px;
+        top: 350px;
         left: 10px;
 }
 /* Label*/
 #Upgrade_4_Label {
 	font-size: 15px;
     position: absolute;
-    top: 342px;
+    top: 350px;
     left: 90px;
 }
 
@@ -260,48 +260,71 @@ body {
 /* Golden Upgrade 1 Button */
 #GoldenUpgrade1Button {
 	cursor: pointer;
-        width: 60px;
-        height: 60px;
-        background-image: url('assets/arrow.png');
-        background-size: cover;
-        background-position: center;
-        border: none;
-        border-radius: 5px;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
 
-        position: absolute;
-        top: 520px;
-        left: 10px;
+    position: absolute;
+    top: 520px;
+    left: 10px;
 }
 /* Golden Upgrade 1 Label */
 #GoldenUpgrade1Label {
 	font-size: 15px;
     position: absolute;
     color: white;
-    top: 525px;
+    top: 520px;
     left: 80px;
 }
 
 /* Golden Upgrade 2 Button */
 #GoldenUpgrade2Button {
 	cursor: pointer;
-        width: 60px;
-        height: 60px;
-        background-image: url('assets/arrow.png');
-        background-size: cover;
-        background-position: center;
-        border: none;
-        border-radius: 5px;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
 
-        position: absolute;
-        top: 590px;
-        left: 10px;
+    position: absolute;
+    top: 590px;
+    left: 10px;
 }
 /* Golden Upgrade 2 Label */
 #GoldenUpgrade2Label {
 	font-size: 15px;
     position: absolute;
     color: white;
-    top: 595px;
+    top: 590px;
+    left: 80px;
+}
+/* Great Reset Button */
+#GreatResetButton {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 660px;
+    left: 10px;
+}
+/* Great Reset Label */
+#GreatResetLabel {
+	font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 660px;
     left: 80px;
 }
 
@@ -401,4 +424,3 @@ body {
     top: 265px;
     left: 80px;
 }
-	
