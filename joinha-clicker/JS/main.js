@@ -185,7 +185,7 @@ prestigebutton.addEventListener("click", function () {
 
         GameData.joinhas = new Decimal(0);
         GameData.click_power = new Decimal(1)
-          .times(GameData.golden_joinhas.div(100).floor().plus(1))
+          .times(GameData.golden_joinhas.div(100).plus(1))
           .times(GameData.golden_upgrade_2_power);
         GameData.joinhas_per_second = new Decimal(0);
         GameData.upgrade_1_cost = new Decimal(10);
