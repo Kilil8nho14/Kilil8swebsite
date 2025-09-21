@@ -11,7 +11,9 @@ window.GameData = {
   golden_joinha_earn: 0n,
   golden_joinha_price: 1000n,
   golden_upgrade_1_cost: 100n,
-  golden_upgrade_1_power: 1n
+  golden_upgrade_1_power: 1n,
+  golden_upgrade_2_cost: 100n,
+  golden_upgrade_2_power: 1n
 };
 
 // ===== Constantes =====
@@ -27,6 +29,11 @@ const prestigemenu = document.getElementById("PrestigeMenu");
 const closeprestigemenubutton = document.getElementById("ClosePrestigeMenu");
 const prestigebutton = document.getElementById("PrestigeButton");
 const goldenupgrade1button = document.getElementById("GoldenUpgrade1Button");
+const goldenupgrade2button = document.getElementById("GoldenUpgrade2Button");
+const settingsmenubutton = document.getElementById("SettingsMenuButton");
+const settingsmenu = document.getElementById("SettingsMenu");
+const closesettingsmenubutton = document.getElementById("CloseSettingsMenu");
+const hardresetbutton = document.getElementById("HardResetButton");
 
 // Shorting to: K, M, B, T...
 function shortedBigInt(num) {
@@ -95,7 +102,7 @@ upgradesMenuButton.addEventListener('click', openupgradesmenu);
 upgrade_1_button.addEventListener("click", function() {
 	if (GameData.joinhas >= GameData.upgrade_1_cost) {
 		GameData.joinhas -= GameData.upgrade_1_cost;
-		GameData.click_power += 1n * (GameData.golden_joinhas / 100n + 1n);
+		GameData.click_power += 1n * (GameData.golden_joinhas / 100n + 1n) * GameData.golden_upgrade_2_power;
 		GameData.upgrade_1_cost = (GameData.upgrade_1_cost * 16n) / 10n;
 		update_screen();
 	}
@@ -105,7 +112,7 @@ upgrade_1_button.addEventListener("click", function() {
 upgrade_2_button.addEventListener("click", function() {
 	if (GameData.joinhas >= GameData.upgrade_2_cost) {
 		GameData.joinhas -= GameData.upgrade_2_cost;
-		GameData.joinhas_per_second += 1n * (GameData.golden_joinhas / 100n + 1n);
+		GameData.joinhas_per_second += 1n * (GameData.golden_joinhas / 100n + 1n) * GameData.golden_upgrade_2_power;
 		GameData.upgrade_2_cost = (GameData.upgrade_2_cost * 15n) / 10n;
 		update_screen();
 	}
@@ -136,7 +143,7 @@ upgrade_4_button.addEventListener("click", function() {
 	if (GameData.joinhas >= 10480000n && GameData.upgrade_4_cap == 0) {
 		GameData.joinhas -= 10480000n;
 		GameData.upgrade_4_cap = 1;
-		GameData.click_power *= 25n * (GameData.golden_joinhas / 100n + 1n);
+		GameData.click_power *= 25n * (GameData.golden_joinhas / 100n + 1n) * GameData.golden_upgrade_2_power;
 		document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)"
 		update_screen();
 	}
@@ -147,12 +154,22 @@ prestigemenubutton.addEventListener("click", function() {
 	prestigemenu.style.display = "block";
 });
 
+// Golden Upgrade 1
 goldenupgrade1button.addEventListener("click", function() {
 	if (GameData.golden_joinhas >= GameData.golden_upgrade_1_cost) {
 		GameData.golden_joinhas -= GameData.golden_upgrade_1_cost;
 		GameData.golden_upgrade_1_cost *= 10n;
 		GameData.golden_upgrade_1_power *= 2n;
 		GameData.golden_joinha_earn = 2n;
+		update_screen();
+	}
+});
+// Golden Upgrade 2
+goldenupgrade2button.addEventListener("click", function() {
+	if (GameData.golden_joinhas >= GameData.golden_upgrade_2_cost) {
+		GameData.golden_joinhas -= GameData.golden_upgrade_2_cost;
+		GameData.golden_upgrade_2_cost *= 10n;
+		GameData.golden_upgrade_2_power *= 2n;
 		update_screen();
 	}
 });
@@ -179,7 +196,7 @@ prestigebutton.addEventListener("click", function() {
 
                     // Reset de Joinhas e upgrades
                     GameData.joinhas = 0n;
-                    GameData.click_power = 1n * (GameData.golden_joinhas / 100n) + 1n;
+                    GameData.click_power = 1n * (BigInt(GameData.golden_joinhas / 100n)) + 1n;
                     GameData.joinhas_per_second = 0n;
                     GameData.upgrade_1_cost = 10n;
                     GameData.upgrade_2_cost = 25n;
@@ -197,6 +214,25 @@ prestigebutton.addEventListener("click", function() {
         }
     );
 });
+
+// Opening Settings Menu
+settingsmenubutton.addEventListener("click", function() {
+	settingsmenu.style.display = "block";
+});
+// Closes The settings Menu
+closesettingsmenubutton.addEventListener("click", function() {
+	settingsmenu.style.display = "none";
+});
+// Hard Reset Button
+hardresetbutton.addEventListener("click", function() {
+	showConfirm(`DO YOU WANT TO HARD RESET FOREVER?`, function(result) {
+		if (result) {
+			localStorage.removeItem("game_save")
+			location.reload()
+		}
+	})
+});
+	
 
 // Atualiza o quanto o jogador ganharia se prestigiar
 function update_golden_joinha_earn() {
@@ -222,6 +258,7 @@ function update_screen() {
   document.getElementById("Upgrade_3_Label").innerText = "Upgrades 1 and 2 at 1/4 of their prices (Cost: " + shortedBigInt(GameData.upgrade_3_cost) + " Joinhas)"
   document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortedBigInt(GameData.golden_joinhas)
   document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortedBigInt(GameData.golden_upgrade_1_cost) + " Golden Joinhas)"
+  document.getElementById("GoldenUpgrade2Label").innerText = "x2 Joinhas\n(Cost: " + shortedBigInt(GameData.golden_upgrade_2_cost) + " Golden Joinhas)"
   GameData.joinhas += GameData.joinhas_per_second;
 }
 
@@ -236,21 +273,24 @@ function save_game() {
 function load_game() {
   let data = localStorage.getItem("game_save");
   if (data) {
-    GameData = JSON.parse(data);
+    const saved = JSON.parse(data);
 
     // Converte de volta os que são BigInt
-    GameData.joinhas = BigInt(GameData.joinhas ?? 0n);
-    GameData.golden_joinhas = BigInt(GameData.golden_joinhas ?? 0n);
-    GameData.click_power = (BigInt(GameData.click_power ?? 1n) * ((GameData.golden_joinhas / 100n) + 1n))
-    GameData.upgrade_1_cost = BigInt(GameData.upgrade_1_cost ?? 10n);
-    GameData.joinhas_per_second = BigInt(GameData.joinhas_per_second ?? 0n);
-    GameData.upgrade_2_cost = BigInt(GameData.upgrade_2_cost ?? 25n);
-    GameData.upgrade_3_cost = BigInt(GameData.upgrade_3_cost ?? 10n);
-    GameData.upgrade_4_cap = parseInt(GameData.upgrade_4_cap ?? 0);
-    GameData.golden_joinha_price = BigInt(GameData.golden_joinha_price ?? 1000n);
-    GameData.golden_joinha_earn = BigInt(GameData.golden_joinha_earn ?? 0n);
-    GameData.golden_upgrade_1_cost = BigInt(GameData.golden_upgrade_1_cost ?? 100n);
-    GameData.golden_upgrade_1_power = BigInt(GameData.golden_upgrade_1_power ?? 1n);
+    GameData.joinhas = BigInt(saved.joinhas ?? 0n);
+    GameData.golden_joinhas = BigInt(saved.golden_joinhas ?? 0n);
+    GameData.click_power = BigInt(saved.click_power ?? 1n);
+    GameData.upgrade_1_cost = BigInt(saved.upgrade_1_cost ?? 10n);
+    GameData.joinhas_per_second = BigInt(saved.joinhas_per_second ?? 0n);
+    GameData.upgrade_2_cost = BigInt(saved.upgrade_2_cost ?? 25n);
+    GameData.upgrade_3_cost = BigInt(saved.upgrade_3_cost ?? 10n);
+    GameData.upgrade_4_cap = parseInt(saved.upgrade_4_cap ?? 0);
+    GameData.golden_joinha_price = BigInt(saved.golden_joinha_price ?? 1000n);
+    GameData.golden_joinha_earn = BigInt(saved.golden_joinha_earn ?? 0n);
+    GameData.golden_upgrade_1_cost = BigInt(saved.golden_upgrade_1_cost ?? 100n);
+    GameData.golden_upgrade_1_power = BigInt(saved.golden_upgrade_1_power ?? 1n);
+    GameData.golden_upgrade_2_cost = BigInt(saved.golden_upgrade_2_cost ?? 100n);
+    GameData.golden_upgrade_2_power = BigInt(saved.golden_upgrade_2_power ?? 1n);
+    
     update_golden_joinha_earn();
   }
   update_screen();
