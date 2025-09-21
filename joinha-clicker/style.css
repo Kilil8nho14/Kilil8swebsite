@@ -227,6 +227,10 @@ body {
     top: 100px;
     left: 10px;
 }
+/* Prestige Menu H2 */
+#PrestigeMenuH2 {
+	color: white;
+}
 
 /* Prestige Button */
 #PrestigeButton {
@@ -250,7 +254,7 @@ body {
     position: absolute;
     top: 465px;
     left: 140px;
-    color: gold;
+    color: white;
 }
 
 /* Golden Upgrade 1 Button */
@@ -272,7 +276,104 @@ body {
 #GoldenUpgrade1Label {
 	font-size: 15px;
     position: absolute;
+    color: white;
     top: 525px;
     left: 80px;
+}
+
+/* Golden Upgrade 2 Button */
+#GoldenUpgrade2Button {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/arrow.png');
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 590px;
+        left: 10px;
+}
+/* Golden Upgrade 2 Label */
+#GoldenUpgrade2Label {
+	font-size: 15px;
+    position: absolute;
     color: white;
+    top: 595px;
+    left: 80px;
+}
+
+/* Settings Menu Button */
+#SettingsMenuButton {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/settings.png');
+        background-color: #057bfe;
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 15px;
+        right: 15px;
+}
+/* Settings Menu */
+#SettingsMenu {
+	display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #00003C;
+    padding: 40px 30px;
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    z-index: 1000;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+/* Closing The Settings Menu */
+#CloseSettingsMenu {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+    transform: rotate(-90deg);
+
+    position: absolute;
+    top: 100px;
+    left: 10px;
+}
+/* Hard Reset Button */
+#HardResetButton {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/x.png');
+        background-color: yellow;
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 190px;
+        left: 10px;
+}
+/* Hard Reset Label */
+#HardResetLabel {
+	font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 195px;
+    left: 80px;
 }
