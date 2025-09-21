@@ -251,3 +251,26 @@ body {
     top: 465px;
     left: 140px;
 }
+
+/* Golden Upgrade 1 Button */
+#GoldenUpgrade1Button {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/arrow.png');
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 520px;
+        left: 10px;
+}
+/* Golden Upgrade 1 Label */
+#GoldenUpgrade1Label {
+	font-size: 15px;
+    position: absolute;
+    top: 525px;
+    left: 80px;
+}
