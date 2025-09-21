@@ -14,7 +14,8 @@ window.GameData = {
   golden_upgrade_1_cost: new Decimal(100),
   golden_upgrade_1_power: new Decimal(1),
   golden_upgrade_2_cost: new Decimal(100),
-  golden_upgrade_2_power: new Decimal(1)
+  golden_upgrade_2_power: new Decimal(1),
+  music_on: false // salva se a música está ON ou OFF
 };
 
 // ===== Constantes =====
@@ -35,6 +36,7 @@ const settingsmenubutton = document.getElementById("SettingsMenuButton");
 const settingsmenu = document.getElementById("SettingsMenu");
 const closesettingsmenubutton = document.getElementById("CloseSettingsMenu");
 const hardresetbutton = document.getElementById("HardResetButton");
+const musicToggle = document.getElementById("musicToggle");
 
 // Shorting numbers
 function shortDecimal(num) {
@@ -246,6 +248,9 @@ function update_screen() {
   document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)";
   document.getElementById("GoldenUpgrade2Label").innerText = "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)";
   GameData.joinhas = GameData.joinhas.plus(GameData.joinhas_per_second);
+
+  // Atualiza label da música automaticamente
+  document.getElementById("MusicLabel").innerText = GameData.music_on ? "🎵 Music ON" : "🎵 Music OFF";
 }
 
 // Save Game
@@ -263,14 +268,21 @@ function load_game() {
     const saved = JSON.parse(data);
     for (let key in GameData) {
       if (saved[key] !== undefined) {
-        GameData[key] = (key === "upgrade_4_cap")
-          ? saved[key]
-          : new Decimal(saved[key]);
+        if (key === "upgrade_4_cap" || key === "music_on") {
+          GameData[key] = saved[key];
+        } else {
+          GameData[key] = new Decimal(saved[key]);
+        }
       }
     }
     update_golden_joinha_earn();
   }
   update_screen();
+
+  // Tocar música se estava ON
+  if (GameData.music_on) {
+    bgm.play().catch(err => console.log(err));
+  }
 }
 
 // Timer
@@ -279,6 +291,25 @@ function onesecondtimer() {
   setInterval(update_screen, 1000);
   setInterval(update_golden_joinha_earn, 1000);
 }
+
+// Music!
+// Cria o áudio
+const bgm = new Audio('assets/Voltaic.mp3'); // seu arquivo de música
+bgm.loop = true;
+bgm.volume = 0.5;
+
+// Botão toggle
+musicToggle.addEventListener("click", function() {
+  if (!GameData.music_on) {
+    bgm.play().catch(err => console.log(err));
+    GameData.music_on = true;
+  } else {
+    bgm.pause();
+    GameData.music_on = false;
+  }
+  update_screen();
+  save_game(); // salva imediatamente quando troca
+});
 
 // Setup inicial
 window.onload = function () {
