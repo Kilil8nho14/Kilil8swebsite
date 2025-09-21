@@ -377,3 +377,28 @@ body {
     top: 195px;
     left: 80px;
 }
+/* Music Toggle */
+#musicToggle {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/music.png');
+        background-color: yellow;
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 260px;
+        left: 10px;
+}
+/* Music Label */
+#MusicLabel {
+	font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 265px;
+    left: 80px;
+}
+	
