@@ -250,6 +250,7 @@ body {
     position: absolute;
     top: 465px;
     left: 140px;
+    color: gold;
 }
 
 /* Golden Upgrade 1 Button */
@@ -273,4 +274,5 @@ body {
     position: absolute;
     top: 525px;
     left: 80px;
+    color: white;
 }
