@@ -1,36 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kilil8nho14</title>
-  <style>
-    body {
-      background-color: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-family: Arial, sans-serif;
-    }
-    button {
-      font-size: 24px;
-      padding: 15px 30px;
-      border-radius: 10px;
-      border: none;
-      background-color: #4caf50;
-      color: white;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JoinhaClicker</title>
+<link rel="stylesheet" href="style.css">
+<script src="JS/main.js" defer></script>
 </head>
 <body>
-  <button onclick="window.location.href='joinha-clicker/index.html'">
-    Joinha Clicker
-  </button>
+  <button id="JoinhaButton"></button>
+  <p id="JoinhaLabel">Joinhas: 0</p>
+  <p id="joinhas_per_second_label"></p>
+  <button id="UpgradesMenuButton"></button>
+  <button id="PrestigeMenuButton"></button>
+    <div id="UpgradesMenu">
+          <h2>Upgrades Menu</h2>
+      <button id="CloseUpgradesButton"></button>
+      <button id="Upgrade_1_Button"></button>
+      <p id="Upgrade_1_Label"></p>
+      <button id="Upgrade_2_Button"></button>
+      <p id="Upgrade_2_Label"></p>
+      <button id="Upgrade_3_Button"></button>
+      <p id="Upgrade_3_Label"></p>
+      <button id="Upgrade_4_Button"></button>
+      <p id="Upgrade_4_Label"></p>
+    </div>
+    <div id="PrestigeMenu">
+    	<h2>Prestige Menu</h2>
+        <button id="ClosePrestigeMenu"></button>
+        <button id="PrestigeButton"></button>
+        <p id="GoldenJoinhaLabel"></p>
+        <button id="GoldenUpgrade1Button"></button>
+        <p id="GoldenUpgrade1Label"></p>
+    </div>
+
 </body>
 </html>
