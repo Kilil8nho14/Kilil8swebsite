@@ -15,6 +15,8 @@ window.GameData = {
   golden_upgrade_1_power: new Decimal(1),
   golden_upgrade_2_cost: new Decimal(100),
   golden_upgrade_2_power: new Decimal(1),
+  great_reset_cost: new Decimal(100000),
+  great_reset_power: new Decimal(1),
   music_on: false // salva se a música está ON ou OFF
 };
 
@@ -36,6 +38,7 @@ const settingsmenubutton = document.getElementById("SettingsMenuButton");
 const settingsmenu = document.getElementById("SettingsMenu");
 const closesettingsmenubutton = document.getElementById("CloseSettingsMenu");
 const hardresetbutton = document.getElementById("HardResetButton");
+const greatresetbutton = document.getElementById("GreatResetButton");
 const musicToggle = document.getElementById("musicToggle");
 
 // Shorting numbers
@@ -168,6 +171,30 @@ goldenupgrade2button.addEventListener("click", function () {
   }
 });
 
+// Great Reset
+greatresetbutton.addEventListener("click", function() {
+	if (GameData.golden_joinhas.gte(GameData.great_reset_cost)) {
+		GameData.joinhas = new Decimal(0);
+  	  GameData.golden_joinhas = new Decimal(0);
+  	  GameData.click_power = new Decimal(1);
+  	  GameData.upgrade_1_cost = new Decimal(10);
+  	  GameData.joinhas_per_second = new Decimal(0);
+  	  GameData.upgrade_2_cost = new Decimal(25);
+  	  GameData.upgrade_3_cost = new Decimal(10);
+  	  GameData.upgrade_4_cap = 0;
+  	  GameData.upgrade_4_power = new Decimal(1);
+  	  GameData.golden_joinha_earn = new Decimal(0);
+  	  GameData.golden_joinha_price = new Decimal(1000);
+  	  GameData.golden_upgrade_1_cost = new Decimal(100);
+  	  GameData.golden_upgrade_1_power = new Decimal(1);
+  	  GameData.golden_upgrade_2_cost = new Decimal(100);
+  	  GameData.golden_upgrade_2_power = new Decimal(1);
+        GameData.great_reset_power = GameData.great_reset_power.times(15);
+        GameData.great_reset_cost = GameData.great_reset_cost.times(22.5);
+        update_screen();
+    }
+});
+
 // Close Prestige Menu
 closeprestigemenubutton.addEventListener("click", function () {
   prestigemenu.style.display = "none";
@@ -230,7 +257,7 @@ function update_golden_joinha_earn() {
 
   while (temp_joinhas.gte(temp_price)) {
     temp_joinhas = temp_joinhas.minus(temp_price);
-    earn = earn.plus(GameData.golden_upgrade_1_power);
+    earn = earn.plus((GameData.golden_upgrade_1_power).times(GameData.great_reset_power));
     temp_price = temp_price.times(1.006);
   }
 
@@ -247,6 +274,7 @@ function update_screen() {
   document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortDecimal(GameData.golden_joinhas);
   document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)";
   document.getElementById("GoldenUpgrade2Label").innerText = "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)";
+  document.getElementById("GreatResetLabel").innerText = "Resets everything but Golden Joinhas are 15x\neasier (Cost: " + shortDecimal(GameData.great_reset_cost) + " Golden Joinhas)"
   GameData.joinhas = GameData.joinhas.plus(GameData.joinhas_per_second);
 
   // Atualiza label da música automaticamente
