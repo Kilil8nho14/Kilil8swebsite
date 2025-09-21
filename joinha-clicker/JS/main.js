@@ -221,7 +221,7 @@ function update_screen() {
   document.getElementById("joinhas_per_second_label").innerText = "Joinhas per second: " + shortedBigInt(GameData.joinhas_per_second)
   document.getElementById("Upgrade_3_Label").innerText = "Upgrades 1 and 2 at 1/4 of their prices (Cost: " + shortedBigInt(GameData.upgrade_3_cost) + " Joinhas)"
   document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortedBigInt(GameData.golden_joinhas)
-  document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas (Cost: " + shortedBigInt(GameData.golden_upgrade_1_cost) + " Golden Joinhas)"
+  document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortedBigInt(GameData.golden_upgrade_1_cost) + " Golden Joinhas)"
   GameData.joinhas += GameData.joinhas_per_second;
 }
 
