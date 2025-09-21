@@ -8,6 +8,7 @@ window.GameData = {
   upgrade_2_cost: 25n,
   upgrade_3_cost: 10n,
   upgrade_4_cap: 0,
+  upgrade_4_power: 1n,
   golden_joinha_earn: 0n,
   golden_joinha_price: 1000n,
   golden_upgrade_1_cost: 100n,
@@ -39,7 +40,7 @@ const hardresetbutton = document.getElementById("HardResetButton");
 function shortedBigInt(num) {
     if (num < 1000n) return num.toString();
 
-    const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"];
+    const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc", "UDc", "DDc", "TDc", "qDc", "QDc"];
     let suffixIndex = 0;
     let n = num;
 
@@ -102,7 +103,7 @@ upgradesMenuButton.addEventListener('click', openupgradesmenu);
 upgrade_1_button.addEventListener("click", function() {
 	if (GameData.joinhas >= GameData.upgrade_1_cost) {
 		GameData.joinhas -= GameData.upgrade_1_cost;
-		GameData.click_power += 1n * (GameData.golden_joinhas / 100n + 1n) * GameData.golden_upgrade_2_power;
+		GameData.click_power += 1n * (GameData.golden_joinhas / 100n + 1n) * GameData.golden_upgrade_2_power * GameData.upgrade_4_power;
 		GameData.upgrade_1_cost = (GameData.upgrade_1_cost * 16n) / 10n;
 		update_screen();
 	}
@@ -143,7 +144,8 @@ upgrade_4_button.addEventListener("click", function() {
 	if (GameData.joinhas >= 10480000n && GameData.upgrade_4_cap == 0) {
 		GameData.joinhas -= 10480000n;
 		GameData.upgrade_4_cap = 1;
-		GameData.click_power *= 25n * (GameData.golden_joinhas / 100n + 1n) * GameData.golden_upgrade_2_power;
+		GameData.upgrade_4_power *= 25n;
+		GameData.click_power *= GameData.upgrade_4_power * (GameData.golden_joinhas / 100n + 1n) * GameData.golden_upgrade_2_power;
 		document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)"
 		update_screen();
 	}
@@ -196,12 +198,13 @@ prestigebutton.addEventListener("click", function() {
 
                     // Reset de Joinhas e upgrades
                     GameData.joinhas = 0n;
-                    GameData.click_power = 1n * (BigInt(GameData.golden_joinhas / 100n)) + 1n;
+                    GameData.click_power = 1n * ((BigInt(GameData.golden_joinhas / 100n)) + 1n) * GameData.golden_upgrade_2_power;
                     GameData.joinhas_per_second = 0n;
                     GameData.upgrade_1_cost = 10n;
                     GameData.upgrade_2_cost = 25n;
                     GameData.upgrade_3_cost = 10n;
                     GameData.upgrade_4_cap = 0;
+                    GameData.upgrade_4_power = 1n;
                     GameData.golden_joinha_price = 1000n;
 
                     // Zera o "quanto ganharia"
@@ -284,6 +287,7 @@ function load_game() {
     GameData.upgrade_2_cost = BigInt(saved.upgrade_2_cost ?? 25n);
     GameData.upgrade_3_cost = BigInt(saved.upgrade_3_cost ?? 10n);
     GameData.upgrade_4_cap = parseInt(saved.upgrade_4_cap ?? 0);
+    GameData.upgrade_4_power = BigInt(saved.upgrade_4_power ?? 1n);
     GameData.golden_joinha_price = BigInt(saved.golden_joinha_price ?? 1000n);
     GameData.golden_joinha_earn = BigInt(saved.golden_joinha_earn ?? 0n);
     GameData.golden_upgrade_1_cost = BigInt(saved.golden_upgrade_1_cost ?? 100n);
