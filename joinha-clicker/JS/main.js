@@ -41,18 +41,17 @@ const hardresetbutton = document.getElementById("HardResetButton");
 const greatresetbutton = document.getElementById("GreatResetButton");
 const musicToggle = document.getElementById("musicToggle");
 
-// Shorting numbers
+// Shorting numbers (científica a partir de 1000)
 function shortDecimal(num) {
-  const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc", "UDc", "DDc", "TDc", "qDc", "QDc"];
-  let n = num;
-  let suffixIndex = 0;
-
-  while (n.gte(1000) && suffixIndex < suffixes.length - 1) {
-    n = n.div(1000);
-    suffixIndex++;
+  if (num.lt(1000)) {
+    return num.toFixed(2); // mostra normalmente até 999.99
+  } else {
+    // converte para notação científica: a.bcde...eX
+    const e = num.logarithm ? num.logarithm() : Math.log10(num.toNumber()); // Decimal.js tem log10
+    const exponent = Decimal.floor(e);
+    const mantissa = num.div(Decimal.pow(10, exponent));
+    return mantissa.toFixed(2) + "e" + exponent.toString();
   }
-
-  return n.toFixed(2) + suffixes[suffixIndex];
 }
 
 // Confirm Popup Function
@@ -203,15 +202,15 @@ closeprestigemenubutton.addEventListener("click", function () {
 // Prestige Button
 prestigebutton.addEventListener("click", function () {
   showConfirm(
-    `Do you want to prestige? This will give: ${GameData.golden_joinha_earn} Golden Joinhas.`,
+    `Do you want to prestige? This will give: ${shortDecimal(GameData.golden_joinha_earn)} Golden Joinhas.`,
     function (result) {
       if (result && GameData.golden_joinha_earn.gte(1)) {
-        GameData.golden_joinhas = GameData.golden_joinhas.plus(GameData.golden_joinha_earn);
+        const n = GameData.golden_joinha_earn; // quantos Golden Joinhas ganhos
 
-        for (let i = new Decimal(0); i.lt(GameData.golden_joinha_earn); i = i.plus(1)) {
-          GameData.golden_joinha_price = GameData.golden_joinha_price.times(1.006).plus(1000);
-        }
+        // soma Golden Joinhas
+        GameData.golden_joinhas = GameData.golden_joinhas.plus(n);
 
+        // reset básico
         GameData.joinhas = new Decimal(0);
         GameData.click_power = new Decimal(1)
           .times(GameData.golden_joinhas.div(100).plus(1))
@@ -222,7 +221,6 @@ prestigebutton.addEventListener("click", function () {
         GameData.upgrade_3_cost = new Decimal(10);
         GameData.upgrade_4_cap = 0;
         GameData.upgrade_4_power = new Decimal(1);
-        GameData.golden_joinha_price = new Decimal(1000);
         GameData.golden_joinha_earn = new Decimal(0);
 
         update_screen();
@@ -249,17 +247,24 @@ hardresetbutton.addEventListener("click", function () {
   });
 });
 
-// Atualiza Golden Joinhas Earn
+// Atualiza Golden Joinhas Earn com debug
 function update_golden_joinha_earn() {
-  let temp_joinhas = GameData.joinhas;
-  let temp_price = GameData.golden_joinha_price;
-  let earn = new Decimal(0);
+  const joinhas = new Decimal(GameData.joinhas);
+  const price = new Decimal(GameData.golden_joinha_price);
+  const r = new Decimal(1.006);
 
-  while (temp_joinhas.gte(temp_price)) {
-    temp_joinhas = temp_joinhas.minus(temp_price);
-    earn = earn.plus((GameData.golden_upgrade_1_power).times(GameData.great_reset_power));
-    temp_price = temp_price.times(1.006);
+  if (joinhas.lt(price)) {
+    GameData.golden_joinha_earn = new Decimal(0);
+    return;
   }
+
+  const arg = joinhas.div(price).times(r.minus(1)).plus(1);
+
+  const n = Decimal.floor(Decimal.ln(arg).div(Decimal.ln(r)));
+
+  const earn = n
+    .times(GameData.golden_upgrade_1_power || new Decimal(1))
+    .times(GameData.great_reset_power || new Decimal(1));
 
   GameData.golden_joinha_earn = earn;
 }
