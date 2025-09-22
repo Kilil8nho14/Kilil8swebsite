@@ -527,3 +527,26 @@ body {
     top: 270px;
     left: 75px;
 }
+/* Magnet Upgrade 3 Button */
+#MagnetUpgrade3Button {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/arrow.png');
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 350px;
+        left: 10px;
+}
+/* Magnet Upgrade 3 Label */
+#MagnetUpgrade3Label {
+	font-size: 20px;
+    position: absolute;
+    color: white;
+    top: 340px;
+    left: 75px;
+}
