@@ -23,6 +23,8 @@ window.GameData = {
   magnet_upgrade_1_power: new Decimal(1),
   magnet_upgrade_2_cost: new Decimal(15),
   magnet_upgrade_2_power: new Decimal(1),
+  magnet_upgrade_3_cost: new Decimal(25),
+  magnet_upgrade_3_limit: new Decimal(0),
   music_on: false // salva se a música está ON ou OFF
 };
 
@@ -51,6 +53,7 @@ const magnetsupgradesbutton = document.getElementById("MagnetsUpgradesButton");
 const closemagnetsmenu = document.getElementById("CloseMagnetsMenu");
 const magnetupgrade1button = document.getElementById("MagnetUpgrade1Button");
 const magnetupgrade2button = document.getElementById("MagnetUpgrade2Button");
+const magnetupgrade3button = document.getElementById("MagnetUpgrade3Button");
 
 // Shorting numbers (científica a partir de 1000)
 function shortDecimal(num) {
@@ -285,6 +288,16 @@ magnetupgrade2button.addEventListener("click", function () {
 		update_screen();
 	}
 });
+// Magnet Upgrade 3
+magnetupgrade3button.addEventListener("click", function () {
+	if (GameData.magnets.gte(GameData.magnet_upgrade_3_cost) && GameData.magnet_upgrade_3_limit.lt(4)) {
+		GameData.magnets = GameData.magnets.minus(GameData.magnet_upgrade_3_cost);
+		GameData.magnetschance = GameData.magnetschance.times(2);
+		GameData.magnet_upgrade_3_cost = GameData.magnet_upgrade_3_cost.times(20);
+		GameData.magnet_upgrade_3_limit = GameData.magnet_upgrade_3_limit.plus(1);
+		update_screen();
+	}
+});
 
 // Hard Reset
 hardresetbutton.addEventListener("click", function () {
@@ -296,7 +309,7 @@ hardresetbutton.addEventListener("click", function () {
   });
 });
 
-// Atualiza Golden Joinhas Earn com debug
+// Atualiza Golden Joinhas Earn
 function update_golden_joinha_earn() {
   const joinhas = new Decimal(GameData.joinhas);
   const price = new Decimal(GameData.golden_joinha_price);
@@ -335,9 +348,10 @@ function update_screen() {
   document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)";
   document.getElementById("GoldenUpgrade2Label").innerText = "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)";
   document.getElementById("GreatResetLabel").innerText = "Resets everything but Golden Joinhas are 15x\neasier (Cost: " + shortDecimal(GameData.great_reset_cost) + " Golden Joinhas)"
-  document.getElementById("MagnetsLabel").innerText = "Magnets: " + shortDecimal(GameData.magnets)
-  document.getElementById("MagnetUpgrade1Label").innerText = "Get 1.5x more Joinhas\n(Cost: "  + shortDecimal(GameData.magnet_upgrade_1_cost) + " Magnets)"
-  document.getElementById("MagnetUpgrade2Label").innerText = "Get 1.5x more Golden Joinhas\n(Cost: " + shortDecimal(GameData.magnet_upgrade_2_cost) + " Magnets)"
+  document.getElementById("MagnetsLabel").innerText = "Magnets: " + shortDecimal(GameData.magnets);
+  document.getElementById("MagnetUpgrade1Label").innerText = "Get 1.5x more Joinhas\n(Cost: "  + shortDecimal(GameData.magnet_upgrade_1_cost) + " Magnets)";
+  document.getElementById("MagnetUpgrade2Label").innerText = "Get 1.5x more Golden Joinhas\n(Cost: " + shortDecimal(GameData.magnet_upgrade_2_cost) + " Magnets)";
+  document.getElementById("MagnetUpgrade3Label").innerText = "Get Magnets 2x easier\n(Cost: " + shortDecimal(GameData.magnet_upgrade_3_cost) + " Magnets)\n(" + GameData.magnet_upgrade_3_limit + " / 4)";
   GameData.joinhas = GameData.joinhas.plus(GameData.joinhas_per_second);
 
   // Atualiza label da música automaticamente
