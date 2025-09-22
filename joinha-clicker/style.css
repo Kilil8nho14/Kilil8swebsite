@@ -481,3 +481,26 @@ body {
     top: 10px;
     left: 10px;
 }
+/* Magnet Upgrade 1 Button */
+#MagnetUpgrade1Button {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/arrow.png');
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 210px;
+        left: 10px;
+}
+/* Magnet Upgrade 1 Label */
+#MagnetUpgrade1Label {
+	font-size: 20px;
+    position: absolute;
+    color: white;
+    top: 200px;
+    left: 75px;
+}
