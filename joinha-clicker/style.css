@@ -504,3 +504,26 @@ body {
     top: 200px;
     left: 75px;
 }
+/* Magnet Upgrade 2 Button */
+#MagnetUpgrade2Button {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/arrow.png');
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 280px;
+        left: 10px;
+}
+/* Magnet Upgrade 2 Label */
+#MagnetUpgrade2Label {
+	font-size: 20px;
+    position: absolute;
+    color: white;
+    top: 270px;
+    left: 75px;
+}
