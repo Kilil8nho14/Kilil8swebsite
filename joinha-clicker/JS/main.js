@@ -71,7 +71,7 @@ function showConfirm(message, callback) {
   okBtn.textContent = "OK";
   okBtn.onclick = () => { document.body.removeChild(popup); callback(true); };
   const cancelBtn = document.createElement("button");
-  cancelBtn.textContent = "Cancelar";
+  cancelBtn.textContent = "Cancel";
   cancelBtn.onclick = () => { document.body.removeChild(popup); callback(false); };
   box.appendChild(okBtn);
   box.appendChild(cancelBtn);
@@ -137,7 +137,7 @@ upgrade_4_button.addEventListener("click", function () {
     GameData.upgrade_4_cap = 1;
     GameData.upgrade_4_power = GameData.upgrade_4_power.times(25);
     GameData.click_power = GameData.click_power.times(
-      GameData.upgrade_4_power.times(GameData.golden_joinhas.div(100).plus(1)).times(GameData.golden_upgrade_2_power)
+    GameData.upgrade_4_power.times(GameData.golden_joinhas.div(100).plus(1)).times(GameData.golden_upgrade_2_power)
     );
     document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)";
     update_screen();
@@ -276,6 +276,11 @@ function update_screen() {
   document.getElementById("Upgrade_2_Label").innerText = "+1 Joinhas per second (Cost: " + shortDecimal(GameData.upgrade_2_cost) + " Joinhas)";
   document.getElementById("joinhas_per_second_label").innerText = "Joinhas per second: " + shortDecimal(GameData.joinhas_per_second);
   document.getElementById("Upgrade_3_Label").innerText = "Upgrades 1 and 2 at 1/4 of their prices (Cost: " + shortDecimal(GameData.upgrade_3_cost) + " Joinhas)";
+  if (GameData.upgrade_4_cap == 0) {
+    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: 1.04e7)";
+  } else {
+    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)";
+  }
   document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortDecimal(GameData.golden_joinhas);
   document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)";
   document.getElementById("GoldenUpgrade2Label").innerText = "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)";
@@ -348,7 +353,7 @@ musicToggle.addEventListener("click", function() {
 window.onload = function () {
   document.getElementById("JoinhaButton").addEventListener("click", joinhaclick);
   if (GameData.upgrade_4_cap == 0) {
-    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: 10.48M)";
+    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: 1.04e7)";
   } else {
     document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)";
   }
