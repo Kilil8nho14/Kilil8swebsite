@@ -4,7 +4,7 @@ body {
 
 /* Joinha Label */
 #JoinhaLabel {
-        font-size:30px;
+    font-size:30px;
     position: absolute;
     top: 235px;
     left: 125px;
@@ -379,18 +379,18 @@ body {
 /* Hard Reset Button */
 #HardResetButton {
 	cursor: pointer;
-        width: 60px;
-        height: 60px;
-        background-image: url('assets/x.png');
-        background-color: yellow;
-        background-size: cover;
-        background-position: center;
-        border: none;
-        border-radius: 5px;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/x.png');
+    background-color: yellow;
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
 
-        position: absolute;
-        top: 190px;
-        left: 10px;
+    position: absolute;
+    top: 190px;
+    left: 10px;
 }
 /* Hard Reset Label */
 #HardResetLabel {
@@ -403,18 +403,18 @@ body {
 /* Music Toggle */
 #musicToggle {
 	cursor: pointer;
-        width: 60px;
-        height: 60px;
-        background-image: url('assets/music.png');
-        background-color: yellow;
-        background-size: cover;
-        background-position: center;
-        border: none;
-        border-radius: 5px;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/music.png');
+    background-color: yellow;
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
 
-        position: absolute;
-        top: 260px;
-        left: 10px;
+    position: absolute;
+    top: 260px;
+    left: 10px;
 }
 /* Music Label */
 #MusicLabel {
@@ -423,4 +423,61 @@ body {
     color: white;
     top: 265px;
     left: 80px;
+}
+
+/* Magnets Upgrades Button */
+#MagnetsUpgradesButton {
+	position: fixed;
+    bottom: 15px;
+    right: 80px;
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: block;
+
+    background-image: url('assets/magnet.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #FFA500;
+}
+/* Magnets Upgrades Menu */
+#MagnetsUpgradesMenu {
+	display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #FFA500;
+    padding: 40px 30px;
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    z-index: 1000;
+}
+/* Magnets Label */
+#MagnetsLabel {
+	font-size: 25px;
+    position: absolute;
+    color: white;
+    top: 95px;
+    left: 140px;
+}
+/* Close Magnets Menu */
+#CloseMagnetsMenu {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+    transform: rotate(-90deg);
+
+    position: absolute;
+    top: 10px;
+    left: 10px;
 }
