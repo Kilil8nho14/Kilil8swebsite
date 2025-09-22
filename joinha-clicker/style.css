@@ -327,6 +327,56 @@ body {
     top: 660px;
     left: 80px;
 }
+/* Next Page Prestige */
+#NextPagePrestige1Button {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+    transform: rotate(90deg);
+
+    position: absolute;
+    top: 100px;
+    right: 70px;
+}
+/* Next Page Prestige Menu 1 */
+#NextPagePrestigeMenu1 {
+	display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #000000;
+    padding: 40px 30px;
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    z-index: 2000;
+}
+/* Page 2 H2 */
+#PrestigeMenuH2Page2 {
+	color: white;
+}
+/* Previous Page 1 Button */
+#PrestigePreviousPage1Button {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+    transform: rotate(-90deg);
+
+    position: absolute;
+    top: 100px;
+    left: 10px;
+}
 
 /* Settings Menu Button */
 #SettingsMenuButton {
@@ -544,9 +594,32 @@ body {
 }
 /* Magnet Upgrade 3 Label */
 #MagnetUpgrade3Label {
-	font-size: 20px;
+	font-size: 15px;
     position: absolute;
     color: white;
     top: 340px;
+    left: 75px;
+}
+/* Magnet Upgrade 4 Button */
+#MagnetUpgrade4Button {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/arrow.png');
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 420px;
+        left: 10px;
+}
+/* Magnet Upgrade 4 Label */
+#MagnetUpgrade4Label {
+	font-size: 20px;
+    position: absolute;
+    color: white;
+    top: 410px;
     left: 75px;
 }
