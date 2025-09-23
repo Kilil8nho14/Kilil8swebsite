@@ -73,9 +73,8 @@ function shortDecimal(num) {
   if (num.lt(1000)) {
     return num.toFixed(2); // mostra normalmente até 999.99
   } else {
-    // converte para notação científica: a.bcde...eX
-    const e = num.logarithm ? num.logarithm() : Math.log10(num.toNumber()); // Decimal.js tem log10
-    const exponent = Decimal.floor(e);
+    // no Break Infinity usamos métodos da instância
+    const exponent = num.log10().floor();
     const mantissa = num.div(Decimal.pow(10, exponent));
     return mantissa.toFixed(2) + "e" + exponent.toString();
   }
