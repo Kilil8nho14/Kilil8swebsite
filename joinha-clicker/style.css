@@ -400,6 +400,29 @@ body {
     top: 100px;
     left: 10px;
 }
+/* Golden Upgrade 3 */
+#GoldenUpgrade3Button {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 200px;
+    left: 10px;
+}
+/* Golden Upgrade 3 Label */
+#GoldenUpgrade3Label {
+	font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 200px;
+    left: 80px;
+}
 
 /* Settings Menu Button */
 #SettingsMenuButton {
