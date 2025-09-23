@@ -221,7 +221,7 @@ greatresetbutton.addEventListener("click", function() {
   	  GameData.golden_upgrade_2_cost = new Decimal(100);
   	  GameData.golden_upgrade_2_power = new Decimal(1);
         GameData.great_reset_power = GameData.great_reset_power.times(15);
-        GameData.great_reset_cost = GameData.great_reset_cost.times(85);
+        GameData.great_reset_cost = GameData.great_reset_cost.times(101);
         update_screen();
     }
 });
