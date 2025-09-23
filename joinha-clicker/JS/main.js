@@ -11,6 +11,9 @@ window.GameData = {
   upgrade_3_cost: new Decimal(10),
   upgrade_4_cap: 0,
   upgrade_4_power: new Decimal(1),
+  upgrade_5_cost: new Decimal(1000),
+  upgrade_5_power: new Decimal(0),
+  upgrade_5_limit: new Decimal(0),
   golden_joinha_earn: new Decimal(0),
   golden_joinha_price: new Decimal(1000),
   golden_upgrade_1_cost: new Decimal(100),
@@ -38,6 +41,7 @@ const upgrade_1_button = document.getElementById('Upgrade_1_Button');
 const upgrade_2_button = document.getElementById('Upgrade_2_Button');
 const upgrade_3_button = document.getElementById("Upgrade_3_Button");
 const upgrade_4_button = document.getElementById("Upgrade_4_Button");
+const upgrade_5_button = document.getElementById("Upgrade_5_Button");
 const prestigemenubutton = document.getElementById("PrestigeMenuButton");
 const prestigemenu = document.getElementById("PrestigeMenu");
 const closeprestigemenubutton = document.getElementById("ClosePrestigeMenu");
@@ -103,7 +107,7 @@ function showConfirm(message, callback) {
 function joinhaclick() {
   GameData.joinhas = GameData.joinhas.plus(GameData.click_power);
   MC = new Decimal(Math.random());
-  if (MC.lte(GameData.magnetschance)) {
+  if (MC.lte(GameData.magnetschance.plus(GameData.upgrade_5_power))) {
   	GameData.magnets = GameData.magnets.plus(1);
   }
   update_screen();
@@ -176,6 +180,17 @@ upgrade_4_button.addEventListener("click", function () {
   }
 });
 
+// Upgrade 5
+upgrade_5_button.addEventListener("click", function () {
+	if (GameData.joinhas.gte(GameData.upgrade_5_cost) && GameData.upgrade_5_limit.lt(20)) {
+		GameData.joinhas = GameData.joinhas.minus(GameData.upgrade_5_cost);
+		GameData.upgrade_5_power = GameData.upgrade_5_power.plus(0.001);
+		GameData.upgrade_5_limit = GameData.upgrade_5_limit.plus(1);
+		GameData.upgrade_5_cost = GameData.upgrade_5_cost.times(10);
+		update_screen();
+	}
+});
+
 // Prestige Menu
 prestigemenubutton.addEventListener("click", function () {
   prestigemenu.style.display = "block";
@@ -214,6 +229,9 @@ greatresetbutton.addEventListener("click", function() {
   	  GameData.upgrade_3_cost = new Decimal(10);
   	  GameData.upgrade_4_cap = 0;
   	  GameData.upgrade_4_power = new Decimal(1);
+        GameData.upgrade_5_cost = new Decimal(1000);
+        GameData.upgrade_5_limit = new Decimal(0);
+        GameData.upgrade_5_power = new Decimal(0);
   	  GameData.golden_joinha_earn = new Decimal(0);
   	  GameData.golden_joinha_price = new Decimal(1000);
   	  GameData.golden_upgrade_1_cost = new Decimal(100);
@@ -262,6 +280,9 @@ prestigebutton.addEventListener("click", function () {
         GameData.upgrade_3_cost = new Decimal(10);
         GameData.upgrade_4_cap = 0;
         GameData.upgrade_4_power = new Decimal(1);
+        GameData.upgrade_5_cost = new Decimal(1000);
+        GameData.upgrade_5_limit = new Decimal(0);
+        GameData.upgrade_5_power = new Decimal(0);
         GameData.golden_joinha_earn = new Decimal(0);
 
         update_screen();
@@ -369,6 +390,11 @@ function update_screen() {
   } else {
     document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)";
   }
+  if (GameData.upgrade_5_limit.lt(20)) {
+      document.getElementById("Upgrade_5_Label").innerText = "+0.1% Chance of a Magnet per click\n(Cost: " + shortDecimal(GameData.upgrade_5_cost) + " Joinhas) (" + GameData.upgrade_5_limit + " / 20)"
+  } else {
+  	document.getElementById("Upgrade_5_Label").innerText = "+0.1% Chance of a Magnet per click\n(Cost: Completed) (" + GameData.upgrade_5_limit + " / 20)"
+  }
   document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortDecimal(GameData.golden_joinhas);
   document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)";
   document.getElementById("GoldenUpgrade2Label").innerText = "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)";
@@ -376,7 +402,11 @@ function update_screen() {
   document.getElementById("MagnetsLabel").innerText = "Magnets: " + shortDecimal(GameData.magnets);
   document.getElementById("MagnetUpgrade1Label").innerText = "Get 1.5x more Joinhas\n(Cost: "  + shortDecimal(GameData.magnet_upgrade_1_cost) + " Magnets)";
   document.getElementById("MagnetUpgrade2Label").innerText = "Get 1.5x more Golden Joinhas\n(Cost: " + shortDecimal(GameData.magnet_upgrade_2_cost) + " Magnets)";
-  document.getElementById("MagnetUpgrade3Label").innerText = "Get Magnets 2x easier\n(Cost: " + shortDecimal(GameData.magnet_upgrade_3_cost) + " Magnets)\n(" + GameData.magnet_upgrade_3_limit + " / 4)";
+  if (GameData.magnet_upgrade_3_limit.lt(4)) {
+      document.getElementById("MagnetUpgrade3Label").innerText = "Get Magnets 2x easier\n(Cost: " + shortDecimal(GameData.magnet_upgrade_3_cost) + " Magnets)\n(" + GameData.magnet_upgrade_3_limit + " / 4)";
+  } else {
+  	document.getElementById("MagnetUpgrade3Label").innerText = "Get Magnets 2x easier\n(Cost: Completed)\n(" + GameData.magnet_upgrade_3_limit + " / 4)";
+  }
   document.getElementById("MagnetUpgrade4Label").innerText = "Get more Joinhas per second\n(Cost: " + shortDecimal(GameData.magnet_upgrade_4_cost) + " Magnets)"
   GameData.joinhas = GameData.joinhas.plus(GameData.joinhas_per_second);
 
@@ -441,13 +471,4 @@ musicToggle.addEventListener("click", function() {
 
 // Setup inicial
 window.onload = function () {
-  document.getElementById("JoinhaButton").addEventListener("click", joinhaclick);
-  if (GameData.upgrade_4_cap == 0) {
-    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: 1.04e7)";
-  } else {
-    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)";
-  }
-  load_game();
-  onesecondtimer();
-  update_screen();
-};
+  document.getElementB
