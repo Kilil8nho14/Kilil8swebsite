@@ -423,6 +423,29 @@ body {
     top: 200px;
     left: 80px;
 }
+/* Unlock Space Upgrade */
+#UnlockSpaceButton {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 270px;
+    left: 10px;
+}
+/* Unlock Space Label */
+#UnlockSpaceLabel {
+	font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 270px;
+    left: 80px;
+}
 
 /* Settings Menu Button */
 #SettingsMenuButton {
@@ -668,4 +691,23 @@ body {
     color: white;
     top: 410px;
     left: 75px;
+}
+
+/* Space Button */
+#SpaceButton {
+	position: fixed;
+    bottom: 15px;
+    left: 85px;
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: none;
+
+    background-image: url('assets/space_button.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #303030;
 }
