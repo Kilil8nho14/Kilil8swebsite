@@ -181,6 +181,29 @@ body {
     left: 90px;
 }
 
+/* Upgrade 5 Button */
+#Upgrade_5_Button {
+	cursor: pointer;
+        width: 60px;
+        height: 60px;
+        background-image: url('assets/arrow.png');
+        background-size: cover;
+        background-position: center;
+        border: none;
+        border-radius: 5px;
+
+        position: absolute;
+        top: 425px;
+        left: 10px;
+}
+/* Label */
+#Upgrade_5_Label {
+	font-size: 15px;
+    position: absolute;
+    top: 425px;
+    left: 90px;
+}
+
 /* Prestige Menu Button */
 #PrestigeMenuButton {
 	cursor: pointer;
