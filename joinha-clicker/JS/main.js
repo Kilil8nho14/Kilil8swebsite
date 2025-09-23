@@ -20,6 +20,8 @@ window.GameData = {
   golden_upgrade_1_power: new Decimal(1),
   golden_upgrade_2_cost: new Decimal(100),
   golden_upgrade_2_power: new Decimal(1),
+  golden_upgrade_3_cost: new Decimal(1000000),
+  golden_upgrade_3_power: new Decimal(0),
   great_reset_cost: new Decimal(100000),
   great_reset_power: new Decimal(1),
   magnet_upgrade_1_cost: new Decimal(10),
@@ -50,6 +52,7 @@ const goldenupgrade1button = document.getElementById("GoldenUpgrade1Button");
 const goldenupgrade2button = document.getElementById("GoldenUpgrade2Button");
 const nextpageprestigemenu1 = document.getElementById("NextPagePrestigeMenu1")
 const nextpageprestige1button = document.getElementById("NextPagePrestige1Button");
+const goldenupgrade3button = document.getElementById("GoldenUpgrade3Button");
 const prestigepreviouspage1button = document.getElementById("PrestigePreviousPage1Button");
 const settingsmenubutton = document.getElementById("SettingsMenuButton");
 const settingsmenu = document.getElementById("SettingsMenu");
@@ -108,7 +111,7 @@ function joinhaclick() {
   GameData.joinhas = GameData.joinhas.plus(GameData.click_power);
   MC = new Decimal(Math.random());
   if (MC.lte(GameData.magnetschance.plus(GameData.upgrade_5_power))) {
-  	GameData.magnets = GameData.magnets.plus(1);
+  	GameData.magnets = GameData.magnets.plus(GameData.golden_upgrade_3_power.plus(1));
   }
   update_screen();
 }
@@ -250,6 +253,16 @@ nextpageprestige1button.addEventListener("click", function () {
 });
 prestigepreviouspage1button.addEventListener("click", function () {
 	nextpageprestigemenu1.style.display = "none";
+});
+
+// Golden Upgrade 3
+goldenupgrade3button.addEventListener("click", function () {
+	if (GameData.golden_joinhas.gte(GameData.golden_upgrade_3_cost)) {
+		GameData.golden_joinhas = GameData.golden_joinhas.minus(GameData.golden_upgrade_3_cost);
+		GameData.golden_upgrade_3_cost = GameData.golden_upgrade_3_cost.times(10);
+		GameData.golden_upgrade_3_power = GameData.golden_upgrade_3_power.plus(1);
+		update_screen();
+	}
 });
 
 // Close Prestige Menu
@@ -398,7 +411,8 @@ function update_screen() {
   document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortDecimal(GameData.golden_joinhas);
   document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)";
   document.getElementById("GoldenUpgrade2Label").innerText = "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)";
-  document.getElementById("GreatResetLabel").innerText = "Resets everything but Golden Joinhas are 15x\neasier (Cost: " + shortDecimal(GameData.great_reset_cost) + " Golden Joinhas)"
+  document.getElementById("GreatResetLabel").innerText = "Resets everything but Golden Joinhas are 15x\neasier (Cost: " + shortDecimal(GameData.great_reset_cost) + " Golden Joinhas)";
+  document.getElementById("GoldenUpgrade3Label").innerText = "Get +1 Magnet per Magnet\n(Cost: " + shortDecimal(GameData.golden_upgrade_3_cost) + " Golden Joinhas)";
   document.getElementById("MagnetsLabel").innerText = "Magnets: " + shortDecimal(GameData.magnets);
   document.getElementById("MagnetUpgrade1Label").innerText = "Get 1.5x more Joinhas\n(Cost: "  + shortDecimal(GameData.magnet_upgrade_1_cost) + " Magnets)";
   document.getElementById("MagnetUpgrade2Label").innerText = "Get 1.5x more Golden Joinhas\n(Cost: " + shortDecimal(GameData.magnet_upgrade_2_cost) + " Magnets)";
@@ -471,4 +485,13 @@ musicToggle.addEventListener("click", function() {
 
 // Setup inicial
 window.onload = function () {
-  document.getElementB
+  document.getElementById("JoinhaButton").addEventListener("click", joinhaclick);
+  if (GameData.upgrade_4_cap == 0) {
+    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: 1.04e7)";
+  } else {
+    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)";
+  }
+  load_game();
+  onesecondtimer();
+  update_screen();
+};
