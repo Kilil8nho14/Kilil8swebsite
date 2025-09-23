@@ -32,6 +32,7 @@ window.GameData = {
   magnet_upgrade_3_limit: new Decimal(0),
   magnet_upgrade_4_cost: new Decimal(10),
   magnet_upgrade_4_power: new Decimal(1),
+  space_unlocked: false,
   music_on: false // salva se a música está ON ou OFF
 };
 
@@ -39,6 +40,7 @@ window.GameData = {
 const upgradesMenuButton = document.getElementById('UpgradesMenuButton');
 const upgradesMenu = document.getElementById('UpgradesMenu');
 const upgradesMenuCloseButton = document.getElementById('CloseUpgradesButton');
+const spacebutton = document.getElementById("SpaceButton");
 const upgrade_1_button = document.getElementById('Upgrade_1_Button');
 const upgrade_2_button = document.getElementById('Upgrade_2_Button');
 const upgrade_3_button = document.getElementById("Upgrade_3_Button");
@@ -53,6 +55,7 @@ const goldenupgrade2button = document.getElementById("GoldenUpgrade2Button");
 const nextpageprestigemenu1 = document.getElementById("NextPagePrestigeMenu1")
 const nextpageprestige1button = document.getElementById("NextPagePrestige1Button");
 const goldenupgrade3button = document.getElementById("GoldenUpgrade3Button");
+const unlockspacebutton = document.getElementById("UnlockSpaceButton");
 const prestigepreviouspage1button = document.getElementById("PrestigePreviousPage1Button");
 const settingsmenubutton = document.getElementById("SettingsMenuButton");
 const settingsmenu = document.getElementById("SettingsMenu");
@@ -221,7 +224,7 @@ goldenupgrade2button.addEventListener("click", function () {
 
 // Great Reset
 greatresetbutton.addEventListener("click", function() {
-	if (GameData.golden_joinhas.gte(GameData.great_reset_cost)) {
+	if (GameData.golden_joinhas.gte(GameData.great_reset_cost) && GameData.great_reset_cost.lt(1e35)) {
 		GameData.joinhas = new Decimal(0);
   	  GameData.golden_joinhas = new Decimal(0);
   	  GameData.click_power = new Decimal(1).times(GameData.magnet_upgrade_1_power);
@@ -263,6 +266,15 @@ goldenupgrade3button.addEventListener("click", function () {
 		update_screen();
 	}
 });
+// Unlock Space Button
+unlockspacebutton.addEventListener("click", function () {
+	if (GameData.golden_joinhas.gte(1e35)) {
+		GameData.golden_joinhas = GameData.golden_joinhas.minus(1e35)
+		GameData.space_unlocked = true;
+		update_screen();
+	}
+});
+		
 
 // Close Prestige Menu
 closeprestigemenubutton.addEventListener("click", function () {
@@ -410,8 +422,19 @@ function update_screen() {
   document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortDecimal(GameData.golden_joinhas);
   document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)";
   document.getElementById("GoldenUpgrade2Label").innerText = "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)";
-  document.getElementById("GreatResetLabel").innerText = "Resets everything but Golden Joinhas are 15x\neasier (Cost: " + shortDecimal(GameData.great_reset_cost) + " Golden Joinhas)";
+  if (GameData.great_reset_cost.gte(1e35)) {
+      document.getElementById("GreatResetLabel").innerText = "Resets everything but Golden Joinhas are 15x\neasier (Cost: " + shortDecimal(GameData.great_reset_cost) + " Golden Joinhas)";
+  } else {
+  	document.getElementById("GreatResetLabel").innerText = "Resets everything but Golden Joinhas are 15x\neasier (Cost: Complete)";
+    }
   document.getElementById("GoldenUpgrade3Label").innerText = "Get +1 Magnet per Magnet\n(Cost: " + shortDecimal(GameData.golden_upgrade_3_cost) + " Golden Joinhas)";
+  if (GameData.space_unlocked === false) {
+  	spacebutton.style.display = "none";
+      document.getElementById("UnlockSpaceLabel").innerText = "Unlocks Space\n(Cost: 1e35)";
+  } else {
+  	spacebutton.style.display = "block";
+  	document.getElementById("UnlockSpaceLabel").innerText = "Unlocks Space\n(Cost: Unlocked)";
+     }
   document.getElementById("MagnetsLabel").innerText = "Magnets: " + shortDecimal(GameData.magnets);
   document.getElementById("MagnetUpgrade1Label").innerText = "Get 1.5x more Joinhas\n(Cost: "  + shortDecimal(GameData.magnet_upgrade_1_cost) + " Magnets)";
   document.getElementById("MagnetUpgrade2Label").innerText = "Get 1.5x more Golden Joinhas\n(Cost: " + shortDecimal(GameData.magnet_upgrade_2_cost) + " Magnets)";
@@ -422,7 +445,9 @@ function update_screen() {
   }
   document.getElementById("MagnetUpgrade4Label").innerText = "Get more Joinhas per second\n(Cost: " + shortDecimal(GameData.magnet_upgrade_4_cost) + " Magnets)"
   GameData.joinhas = GameData.joinhas.plus(GameData.joinhas_per_second);
-
+  if (GameData.space_unlocked === true) {
+  	spacebutton.style.display = "block";
+  }
   // Atualiza label da música automaticamente
   document.getElementById("MusicLabel").innerText = GameData.music_on ? "🎵 Music ON" : "🎵 Music OFF";
 }
@@ -443,11 +468,11 @@ function load_game() {
     for (let key in GameData) {
       if (saved[key] !== undefined) {
         if (key === "upgrade_4_cap") {
-          GameData[key] = Number(saved[key]); // força número
-        } else if (key === "music_on") {
+          GameData[key] = Number(saved[key]);
+        } else if (key === "music_on" || key === "space_unlocked") {
           GameData[key] = !!saved[key]; // força booleano
         } else {
-          GameData[key] = new Decimal(saved[key]); // recria Decimal
+          GameData[key] = new Decimal(saved[key]);
         }
       }
     }
