@@ -228,7 +228,6 @@ body {
     left: 0;
     background-color: #000000;
     padding: 40px 30px;
-    border-radius: 10px;
     height: 100%;
     width: 100%;
     text-align: left;
@@ -374,7 +373,6 @@ body {
     left: 0;
     background-color: #000000;
     padding: 40px 30px;
-    border-radius: 10px;
     height: 100%;
     width: 100%;
     text-align: left;
@@ -471,7 +469,6 @@ body {
     left: 0;
     background-color: #00003C;
     padding: 40px 30px;
-    border-radius: 10px;
     height: 100%;
     width: 100%;
     text-align: left;
@@ -570,7 +567,6 @@ body {
     left: 0;
     background-color: #FFA500;
     padding: 40px 30px;
-    border-radius: 10px;
     height: 100%;
     width: 100%;
     text-align: left;
@@ -710,4 +706,66 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: #303030;
+}
+/* Space Menu */
+#SpaceMenu {
+	display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #000000;
+    padding: 40px 30px;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    z-index: 1000;
+}
+/* Space Back Button */
+#SpaceBackButton {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+    transform: rotate(-90deg);
+
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+/* Earth */
+#EarthButton {
+    cursor: pointer;
+    width: 128px;
+    height: 128px;
+
+    background-image: url('assets/earth.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    background-color: transparent;
+
+    position: absolute;
+    top: 325px;
+    left: 125px;
+
+    /* máscara com a própria imagem */
+    -webkit-mask-image: url('assets/earth.png'); /* Chrome/Safari */
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: cover;
+
+    mask-image: url('assets/earth.png'); /* Firefox */
+    mask-repeat: no-repeat;
+    mask-size: cover;
+}
+/* Label */
+#EarthLabel {
+	font-size: 13px;
+    position: absolute;
+    color: white;
+    top: 440px;
+    left: 100px;
 }
