@@ -2,6 +2,7 @@
 window.GameData = {
   joinhas: new Decimal(0),
   golden_joinhas: new Decimal(0),
+  boostpergoldenjoinha: new Decimal(0.01),
   magnets: new Decimal(0),
   magnetschance: new Decimal(0.005),
   click_power: new Decimal(1),
@@ -32,6 +33,7 @@ window.GameData = {
   magnet_upgrade_3_limit: new Decimal(0),
   magnet_upgrade_4_cost: new Decimal(10),
   magnet_upgrade_4_power: new Decimal(1),
+  earth_upgrade_cost: new Decimal(1000),
   space_unlocked: false,
   music_on: false // salva se a música está ON ou OFF
 };
@@ -41,6 +43,9 @@ const upgradesMenuButton = document.getElementById('UpgradesMenuButton');
 const upgradesMenu = document.getElementById('UpgradesMenu');
 const upgradesMenuCloseButton = document.getElementById('CloseUpgradesButton');
 const spacebutton = document.getElementById("SpaceButton");
+const spacemenu = document.getElementById("SpaceMenu");
+const earthbutton = document.getElementById("EarthButton");
+const spacebackbutton = document.getElementById("SpaceBackButton");
 const upgrade_1_button = document.getElementById('Upgrade_1_Button');
 const upgrade_2_button = document.getElementById('Upgrade_2_Button');
 const upgrade_3_button = document.getElementById("Upgrade_3_Button");
@@ -131,7 +136,7 @@ upgrade_1_button.addEventListener("click", function () {
     GameData.joinhas = GameData.joinhas.minus(GameData.upgrade_1_cost);
     GameData.click_power = GameData.click_power.plus(
       new Decimal(1)
-        .times(GameData.golden_joinhas.div(100).plus(1))
+        .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
         .times(GameData.golden_upgrade_2_power)
         .times(GameData.upgrade_4_power)
         .times(GameData.magnet_upgrade_1_power)
@@ -147,8 +152,9 @@ upgrade_2_button.addEventListener("click", function () {
     GameData.joinhas = GameData.joinhas.minus(GameData.upgrade_2_cost);
     GameData.joinhas_per_second = GameData.joinhas_per_second.plus((
       new Decimal(1)
-     .times(GameData.golden_joinhas.div(100)
-     .plus(1)).times(GameData.golden_upgrade_2_power))
+     .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha)
+     .plus(1))
+     .times(GameData.golden_upgrade_2_power))
      .times(GameData.magnet_upgrade_1_power)
      .times(GameData.magnet_upgrade_4_power)
     );
@@ -176,7 +182,7 @@ upgrade_4_button.addEventListener("click", function () {
     GameData.upgrade_4_power = GameData.upgrade_4_power.times(25);
     GameData.click_power = GameData.click_power.times((
     GameData.upgrade_4_power
-    .times(GameData.golden_joinhas.div(100).plus(1))
+    .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
     .times(GameData.golden_upgrade_2_power))
     .times(GameData.magnet_upgrade_1_power)
     );
@@ -295,7 +301,7 @@ prestigebutton.addEventListener("click", function () {
         // reset básico
         GameData.joinhas = new Decimal(0);
         GameData.click_power = new Decimal(1)
-          .times(GameData.golden_joinhas.div(100).plus(1))
+          .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
           .times(GameData.golden_upgrade_2_power)
           .times(GameData.magnet_upgrade_1_power);
         GameData.joinhas_per_second = new Decimal(0);
@@ -379,6 +385,26 @@ hardresetbutton.addEventListener("click", function () {
   });
 });
 
+// Space Button
+spacebutton.addEventListener("click", function () {
+	spacemenu.style.display = "block";
+});
+
+// Earth Upgrade
+earthbutton.addEventListener("click", function () {
+	if (GameData.magnets.gte(GameData.earth_upgrade_cost)) {
+		GameData.magnets = GameData.magnets.minus(GameData.earth_upgrade_cost);
+		GameData.boostpergoldenjoinha = GameData.boostpergoldenjoinha.plus(0.01);
+		GameData.earth_upgrade_cost = GameData.earth_upgrade_cost.times(2);
+		update_screen();
+	}
+});
+
+// Closing
+spacebackbutton.addEventListener("click", function () {
+	spacemenu.style.display = "none";
+});
+
 // Atualiza Golden Joinhas Earn
 function update_golden_joinha_earn() {
   const joinhas = new Decimal(GameData.joinhas);
@@ -419,7 +445,7 @@ function update_screen() {
   } else {
   	document.getElementById("Upgrade_5_Label").innerText = "+0.1% Chance of a Magnet per click\n(Cost: Completed) (" + GameData.upgrade_5_limit + " / 20)"
   }
-  document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortDecimal(GameData.golden_joinhas);
+  document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortDecimal(GameData.golden_joinhas) + "\nBoost per Golden Joinha: " + shortDecimal(GameData.boostpergoldenjoinha.times(100)) + "%";
   document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)";
   document.getElementById("GoldenUpgrade2Label").innerText = "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)";
   if (GameData.great_reset_cost.gte(1e35)) {
@@ -431,6 +457,9 @@ function update_screen() {
   if (GameData.space_unlocked === false) {
   	spacebutton.style.display = "none";
       document.getElementById("UnlockSpaceLabel").innerText = "Unlocks Space\n(Cost: 1e35)";
+  } else {
+  	spacebutton.style.display = "block";
+  	document.getElementById("UnlockSpaceLabel").innerText = "Unlocks Space\n(Cost: 1e35)";
   } else {
   	spacebutton.style.display = "block";
   	document.getElementById("UnlockSpaceLabel").innerText = "Unlocks Space\n(Cost: Unlocked)";
@@ -448,6 +477,7 @@ function update_screen() {
   if (GameData.space_unlocked === true) {
   	spacebutton.style.display = "block";
   }
+  document.getElementById("EarthLabel").innerText = "Get more boost per Golden Joinhas:\n" + shortDecimal(GameData.boostpergoldenjoinha.times(100)) + "% → " + shortDecimal((GameData.boostpergoldenjoinha.plus(0.01)).times(100)) + "%\n(Cost: " + shortDecimal(GameData.earth_upgrade_cost) + " Magnets)"
   // Atualiza label da música automaticamente
   document.getElementById("MusicLabel").innerText = GameData.music_on ? "🎵 Music ON" : "🎵 Music OFF";
 }
