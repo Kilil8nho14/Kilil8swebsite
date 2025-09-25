@@ -459,9 +459,6 @@ function update_screen() {
       document.getElementById("UnlockSpaceLabel").innerText = "Unlocks Space\n(Cost: 1e35)";
   } else {
   	spacebutton.style.display = "block";
-  	document.getElementById("UnlockSpaceLabel").innerText = "Unlocks Space\n(Cost: 1e35)";
-  } else {
-  	spacebutton.style.display = "block";
   	document.getElementById("UnlockSpaceLabel").innerText = "Unlocks Space\n(Cost: Unlocked)";
      }
   document.getElementById("MagnetsLabel").innerText = "Magnets: " + shortDecimal(GameData.magnets);
