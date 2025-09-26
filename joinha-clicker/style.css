@@ -473,8 +473,6 @@ body {
     width: 100%;
     text-align: left;
     z-index: 1000;
-    overflow-y: auto;
-    overflow-x: hidden;
 }
 /* Closing The Settings Menu */
 #CloseSettingsMenu {
@@ -717,7 +715,7 @@ body {
     padding: 40px 30px;
     height: 100%;
     width: 100%;
-    text-align: left;
+    text-align: center;
     z-index: 1000;
 }
 /* Space Back Button */
@@ -768,4 +766,98 @@ body {
     color: white;
     top: 440px;
     left: 100px;
+}
+
+/* Iron Bar Menu Button */
+#IronBarMenuButton {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/ironbar.png');
+    background-size: cover;
+    background-position: center;
+    background-color: #00D7FF;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 75px;
+    right: 70px;
+}
+/* Menu */
+#IronBarMenu {
+	display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #B7B2FF;
+    padding: 40px 30px;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    z-index: 1000;
+}
+/* Closing */
+#CloseIronBarMenu {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+    transform: rotate(-90deg);
+
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+/* Iron Bar Label */
+#IronBarLabel {
+	font-size: 25px;
+    position: absolute;
+    color: white;
+    top: 70px;
+    left: 110px;
+}
+/* IBTL */
+#IronBarTimeLabel {
+	font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 10px;
+    left: 75px;
+}
+/* IBS */
+.iron-bar {
+  position: fixed;
+  width: 96px;
+  height: 96px;
+  cursor: pointer;
+  user-select: none;
+  z-index: 10000;
+}
+/* IronBar Upgrades */
+#IronBarUpgrade1Button {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 175px;
+    left: 10px;
+}
+/* Iron Bar Upgrade 1 Label */
+#IronBarUpgrade1Label {
+	font-size: 20px;
+    position: absolute;
+    color: white;
+    top: 150px;
+    left: 75px;
 }
