@@ -34,6 +34,11 @@ window.GameData = {
   magnet_upgrade_4_cost: new Decimal(10),
   magnet_upgrade_4_power: new Decimal(1),
   earth_upgrade_cost: new Decimal(1000),
+  ironbars: new Decimal(0),
+  ironbardelay: new Decimal(60000),
+  ironbarlist: [],
+  ironbarupgrade1cost: new Decimal(10),
+  ironbarupgrade1power: new Decimal(1),
   space_unlocked: false,
   music_on: false // salva se a música está ON ou OFF
 };
@@ -45,6 +50,10 @@ const upgradesMenuCloseButton = document.getElementById('CloseUpgradesButton');
 const spacebutton = document.getElementById("SpaceButton");
 const spacemenu = document.getElementById("SpaceMenu");
 const earthbutton = document.getElementById("EarthButton");
+const ironbarmenubutton = document.getElementById("IronBarMenuButton");
+const ironbarmenu = document.getElementById("IronBarMenu");
+const ironbarupgrade1button = document.getElementById("IronBarUpgrade1Button");
+const closeironbarmenu = document.getElementById("CloseIronBarMenu");
 const spacebackbutton = document.getElementById("SpaceBackButton");
 const upgrade_1_button = document.getElementById('Upgrade_1_Button');
 const upgrade_2_button = document.getElementById('Upgrade_2_Button');
@@ -78,6 +87,7 @@ const magnetupgrade4button = document.getElementById("MagnetUpgrade4Button");
 
 // Shorting numbers (científica a partir de 1000)
 function shortDecimal(num) {
+	num = new Decimal(num);
   if (num.lt(1000)) {
     return num.toFixed(2); // mostra normalmente até 999.99
   } else {
@@ -117,8 +127,11 @@ function showConfirm(message, callback) {
 function joinhaclick() {
   GameData.joinhas = GameData.joinhas.plus(GameData.click_power);
   MC = new Decimal(Math.random());
-  if (MC.lte(GameData.magnetschance.plus(GameData.upgrade_5_power))) {
-  	GameData.magnets = GameData.magnets.plus(GameData.golden_upgrade_3_power.plus(1));
+  if (MC.lte(GameData.magnetschance
+       .plus(GameData.upgrade_5_power))) {
+  	GameData.magnets = GameData.magnets
+       .plus(GameData.golden_upgrade_3_power
+       .plus(1));
   }
   update_screen();
 }
@@ -133,13 +146,15 @@ upgradesMenuButton.addEventListener('click', openupgradesmenu);
 // Upgrade 1
 upgrade_1_button.addEventListener("click", function () {
   if (GameData.joinhas.gte(GameData.upgrade_1_cost)) {
-    GameData.joinhas = GameData.joinhas.minus(GameData.upgrade_1_cost);
-    GameData.click_power = GameData.click_power.plus(
-      new Decimal(1)
+    GameData.joinhas = GameData.joinhas
+     .minus(GameData.upgrade_1_cost);
+    GameData.click_power = GameData.click_power
+        .plus(new Decimal(1)
         .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
         .times(GameData.golden_upgrade_2_power)
         .times(GameData.upgrade_4_power)
         .times(GameData.magnet_upgrade_1_power)
+        .times(GameData.ironbarupgrade1power)
     );
     GameData.upgrade_1_cost = GameData.upgrade_1_cost.times(1.6);
     update_screen();
@@ -157,6 +172,7 @@ upgrade_2_button.addEventListener("click", function () {
      .times(GameData.golden_upgrade_2_power))
      .times(GameData.magnet_upgrade_1_power)
      .times(GameData.magnet_upgrade_4_power)
+     .times(GameData.ironbarupgrade1power)
     );
     GameData.upgrade_2_cost = GameData.upgrade_2_cost.times(1.5);
     update_screen();
@@ -185,6 +201,7 @@ upgrade_4_button.addEventListener("click", function () {
     .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
     .times(GameData.golden_upgrade_2_power))
     .times(GameData.magnet_upgrade_1_power)
+    .times(GameData.ironbarupgrade1power)
     );
     document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)";
     update_screen();
@@ -303,7 +320,8 @@ prestigebutton.addEventListener("click", function () {
         GameData.click_power = new Decimal(1)
           .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
           .times(GameData.golden_upgrade_2_power)
-          .times(GameData.magnet_upgrade_1_power);
+          .times(GameData.magnet_upgrade_1_power)
+          .times(GameData.ironbarupgrade1power);
         GameData.joinhas_per_second = new Decimal(0);
         GameData.upgrade_1_cost = new Decimal(10);
         GameData.upgrade_2_cost = new Decimal(25);
@@ -400,7 +418,25 @@ earthbutton.addEventListener("click", function () {
 	}
 });
 
-// Closing
+// Iron Bar Menu
+ironbarmenubutton.addEventListener("click", function () {
+	ironbarmenu.style.display = "block";
+});
+closeironbarmenu.addEventListener("click", function () {
+	ironbarmenu.style.display = "none";
+});
+// Iron Bar Upgrades
+ironbarupgrade1button.addEventListener("click", function () {
+	if (GameData.ironbars.gte(GameData.ironbarupgrade1cost)) {
+		GameData.ironbars = GameData.ironbars.minus(GameData.ironbarupgrade1cost);
+		GameData.ironbarupgrade1cost = GameData.ironbarupgrade1cost.times(1.15);
+		GameData.ironbarupgrade1power = GameData.ironbarupgrade1power.times(1.05);
+		GameData.click_power = GameData.click_power.times(1.05);
+		update_screen();
+	}
+});
+
+// Closing Space Menu
 spacebackbutton.addEventListener("click", function () {
 	spacemenu.style.display = "none";
 });
@@ -448,7 +484,7 @@ function update_screen() {
   document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortDecimal(GameData.golden_joinhas) + "\nBoost per Golden Joinha: " + shortDecimal(GameData.boostpergoldenjoinha.times(100)) + "%";
   document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)";
   document.getElementById("GoldenUpgrade2Label").innerText = "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)";
-  if (GameData.great_reset_cost.gte(1e35)) {
+  if (GameData.great_reset_cost.lt(1e35)) {
       document.getElementById("GreatResetLabel").innerText = "Resets everything but Golden Joinhas are 15x\neasier (Cost: " + shortDecimal(GameData.great_reset_cost) + " Golden Joinhas)";
   } else {
   	document.getElementById("GreatResetLabel").innerText = "Resets everything but Golden Joinhas are 15x\neasier (Cost: Complete)";
@@ -475,6 +511,9 @@ function update_screen() {
   	spacebutton.style.display = "block";
   }
   document.getElementById("EarthLabel").innerText = "Get more boost per Golden Joinhas:\n" + shortDecimal(GameData.boostpergoldenjoinha.times(100)) + "% → " + shortDecimal((GameData.boostpergoldenjoinha.plus(0.01)).times(100)) + "%\n(Cost: " + shortDecimal(GameData.earth_upgrade_cost) + " Magnets)"
+  document.getElementById("IronBarLabel").innerText = "Iron Bars: " + shortDecimal(GameData.ironbars)
+  document.getElementById("IronBarTimeLabel").innerText = "An Iron Bar spawns every: " + shortDecimal(GameData.ironbardelay.div(1000)) + " Seconds"
+  document.getElementById("IronBarUpgrade1Label").innerText = "Get more Joinhas:\n" + shortDecimal(GameData.ironbarupgrade1power) + "x → " + shortDecimal(GameData.ironbarupgrade1power * new Decimal(1.15)) + "x\n(Cost: " + shortDecimal(GameData.ironbarupgrade1cost) + " Iron Bars)"
   // Atualiza label da música automaticamente
   document.getElementById("MusicLabel").innerText = GameData.music_on ? "🎵 Music ON" : "🎵 Music OFF";
 }
@@ -498,6 +537,8 @@ function load_game() {
           GameData[key] = Number(saved[key]);
         } else if (key === "music_on" || key === "space_unlocked") {
           GameData[key] = !!saved[key]; // força booleano
+        }  else if (key === "ironbarlist") {
+        	GameData[key] = [];
         } else {
           GameData[key] = new Decimal(saved[key]);
         }
@@ -507,6 +548,8 @@ function load_game() {
   }
   update_screen();
 }
+
+
 
 // Timer
 function onesecondtimer() {
@@ -534,6 +577,47 @@ musicToggle.addEventListener("click", function() {
   save_game(); // salva imediatamente quando troca
 });
 
+// Função para spawnar a barra
+function spawnIronBar() {
+  const bar = document.createElement("img");
+  bar.src = "assets/ironbar.png";
+  bar.classList.add("iron-bar");
+
+  // posição X aleatória (deixa a barra inteira dentro da tela)
+  const screenWidth = window.innerWidth;
+  const randomX = Math.floor(Math.random() * (screenWidth - 40));
+  bar.style.left = randomX + "px";
+
+  // começa fora da tela, embaixo
+  bar.style.bottom = "-60px";
+
+  // evento de coleta
+  bar.addEventListener("click", () => {
+    bar.remove();
+    GameData.ironbars = GameData.ironbars.plus(1);
+  });
+
+  document.body.appendChild(bar);
+  GameData.ironbarlist.push(bar);
+
+  // animação para subir
+  let pos = -60;
+  const screenHeight = window.innerHeight;
+
+  function animate() {
+    pos += 2; // velocidade
+    bar.style.bottom = pos + "px";
+
+    if (pos < screenHeight + 100) {
+      requestAnimationFrame(animate);
+    } else {
+      bar.remove();
+    }
+  }
+
+  animate();
+}
+
 // Setup inicial
 window.onload = function () {
   document.getElementById("JoinhaButton").addEventListener("click", joinhaclick);
@@ -545,4 +629,10 @@ window.onload = function () {
   load_game();
   onesecondtimer();
   update_screen();
+  if (GameData.space_unlocked === true) {
+  	// Loop para spawnar de acordo com ironbardelay
+      setInterval(() => {
+        spawnIronBar();
+      }, GameData.ironbardelay);
+  }
 };
