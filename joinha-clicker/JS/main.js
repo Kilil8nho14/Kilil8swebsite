@@ -49,6 +49,7 @@ window.GameData = {
   ironbarupgrade2power: new Decimal(1),
   ironbarupgrade3cost: new Decimal(10),
   ironbarupgrade3power: new Decimal(1),
+  ironbarupgrade4cost: new Decimal(5),
   space_unlocked: false,
   music_on: false
 };
@@ -65,6 +66,14 @@ function shortDecimal(num) {
   const exponent = num.log10().floor();
   const mantissa = num.div(Decimal.pow(10, exponent));
   return mantissa.toFixed(2) + "e" + exponent.toString();
+}
+
+let ironBarInterval = null;
+function setIronBarSpawner() {
+  if (ironBarInterval) {
+  clearInterval(ironBarInterval);
+  }
+  ironBarInterval = setInterval(spawnIronBar, Number(GameData.ironbardelay));
 }
 
 function showConfirm(message, callback) {
@@ -174,6 +183,7 @@ const labelFns = {
   IronBarUpgrade1Label: () => "Get more Joinhas:\n" + shortDecimal(GameData.ironbarupgrade1power) + "x → " + shortDecimal(GameData.ironbarupgrade1power.times(new Decimal(1.15))) + "x\n(Cost: " + shortDecimal(GameData.ironbarupgrade1cost) + " Iron Bars)",
   IronBarUpgrade2Label: () => "Get more Magnets:\n" + shortDecimal(GameData.ironbarupgrade2power) + "x → " + shortDecimal(GameData.ironbarupgrade2power.times(new Decimal(1.15))) + "x\n(Cost: " + shortDecimal(GameData.ironbarupgrade2cost) + " Iron Bars)",
   IronBarUpgrade3Label: () => "Get more Iron Bars:\n+" + shortDecimal(GameData.ironbarupgrade3power) + " → +" + shortDecimal(GameData.ironbarupgrade3power.plus(new Decimal(1))) + "\n(Cost: " + shortDecimal(GameData.ironbarupgrade3cost) + " Iron Bars)",
+  IronBarUpgrade4Label: () => "Iron Bars spawn more often:\n" + shortDecimal(GameData.ironbardelay.div(1000)) + "s → " + shortDecimal((GameData.ironbardelay.div(1000)).minus(1)) + "\n(Cost: " + shortDecimal(GameData.ironbarupgrade4cost) + " Iron Bars)",
   MusicLabel: () => GameData.music_on ? "🎵 Music ON" : "🎵 Music OFF"
 };
 
@@ -291,6 +301,7 @@ const DOM = {
   ironbarupgrade1button: $("IronBarUpgrade1Button"),
   ironbarupgrade2button: $("IronBarUpgrade2Button"),
   ironbarupgrade3button: $("IronBarUpgrade3Button"),
+  ironbarupgrade4button: $("IronBarUpgrade4Button"),
   closeironbarmenu: $("CloseIronBarMenu"),
   spacebackbutton: $("SpaceBackButton"),
   upgrade_1_button: $("Upgrade_1_Button"),
@@ -649,6 +660,17 @@ if (DOM.ironbarupgrade3button) {
     })
   );
 }
+if (DOM.ironbarupgrade4button) {
+  DOM.ironbarupgrade4button.addEventListener("click", () => {
+    if (GameData.ironbardelay.gt(new Decimal(11000))) {
+      purchase("ironbars", "ironbarupgrade4cost", () => {
+        GameData.ironbarupgrade4cost = GameData.ironbarupgrade4cost.times(2);
+        GameData.ironbardelay = GameData.ironbardelay.minus(1000);
+        setIronBarSpawner();
+      });
+    }
+  });
+}
 
 // Music toggle
 if (DOM.musicToggle) {
@@ -687,6 +709,6 @@ window.onload = function () {
 
   // start ironbar spawns if unlocked
   if (GameData.space_unlocked === true) {
-    setInterval(() => spawnIronBar(), Number(GameData.ironbardelay));
+    setIronBarSpawner();
   }
 };
