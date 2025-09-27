@@ -872,14 +872,14 @@ body {
     border-radius: 5px;
 
     position: absolute;
-    top: 245px;
+    top: 255px;
     left: 10px;
 }
 #IronBarUpgrade2Label {
 	font-size: 15px;
     position: absolute;
     color: white;
-    top: 235px;
+    top: 245px;
     left: 75px;
 }
 
@@ -894,13 +894,35 @@ body {
     border-radius: 5px;
 
     position: absolute;
-    top: 315px;
+    top: 335px;
     left: 10px;
 }
 #IronBarUpgrade3Label {
 	font-size: 15px;
     position: absolute;
     color: white;
-    top: 305px;
+    top: 325px;
+    left: 75px;
+}
+
+#IronBarUpgrade4Button {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 415px;
+    left: 10px;
+}
+#IronBarUpgrade4Label {
+	font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 405px;
     left: 75px;
 }
