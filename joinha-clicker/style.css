@@ -882,3 +882,25 @@ body {
     top: 235px;
     left: 75px;
 }
+
+#IronBarUpgrade3Button {
+	cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 315px;
+    left: 10px;
+}
+#IronBarUpgrade3Label {
+	font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 305px;
+    left: 75px;
+}
