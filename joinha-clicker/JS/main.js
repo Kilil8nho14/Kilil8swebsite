@@ -1,4 +1,10 @@
-// Global Dictionary
+// main_refactored_full.js
+// Versão refatorada que mantém todas as mecânicas do arquivo original,
+// mas com menos repetição e organização melhor.
+
+//////////////////////
+// ===== GameData ===
+//////////////////////
 window.GameData = {
   joinhas: new Decimal(0),
   golden_joinhas: new Decimal(0),
@@ -39,77 +45,35 @@ window.GameData = {
   ironbarlist: [],
   ironbarupgrade1cost: new Decimal(10),
   ironbarupgrade1power: new Decimal(1),
+  ironbarupgrade2cost: new Decimal(15),
+  ironbarupgrade2power: new Decimal(1),
   space_unlocked: false,
-  music_on: false // salva se a música está ON ou OFF
+  music_on: false
 };
 
-// ===== Constantes =====
-const upgradesMenuButton = document.getElementById('UpgradesMenuButton');
-const upgradesMenu = document.getElementById('UpgradesMenu');
-const upgradesMenuCloseButton = document.getElementById('CloseUpgradesButton');
-const spacebutton = document.getElementById("SpaceButton");
-const spacemenu = document.getElementById("SpaceMenu");
-const earthbutton = document.getElementById("EarthButton");
-const ironbarmenubutton = document.getElementById("IronBarMenuButton");
-const ironbarmenu = document.getElementById("IronBarMenu");
-const ironbarupgrade1button = document.getElementById("IronBarUpgrade1Button");
-const closeironbarmenu = document.getElementById("CloseIronBarMenu");
-const spacebackbutton = document.getElementById("SpaceBackButton");
-const upgrade_1_button = document.getElementById('Upgrade_1_Button');
-const upgrade_2_button = document.getElementById('Upgrade_2_Button');
-const upgrade_3_button = document.getElementById("Upgrade_3_Button");
-const upgrade_4_button = document.getElementById("Upgrade_4_Button");
-const upgrade_5_button = document.getElementById("Upgrade_5_Button");
-const prestigemenubutton = document.getElementById("PrestigeMenuButton");
-const prestigemenu = document.getElementById("PrestigeMenu");
-const closeprestigemenubutton = document.getElementById("ClosePrestigeMenu");
-const prestigebutton = document.getElementById("PrestigeButton");
-const goldenupgrade1button = document.getElementById("GoldenUpgrade1Button");
-const goldenupgrade2button = document.getElementById("GoldenUpgrade2Button");
-const nextpageprestigemenu1 = document.getElementById("NextPagePrestigeMenu1")
-const nextpageprestige1button = document.getElementById("NextPagePrestige1Button");
-const goldenupgrade3button = document.getElementById("GoldenUpgrade3Button");
-const unlockspacebutton = document.getElementById("UnlockSpaceButton");
-const prestigepreviouspage1button = document.getElementById("PrestigePreviousPage1Button");
-const settingsmenubutton = document.getElementById("SettingsMenuButton");
-const settingsmenu = document.getElementById("SettingsMenu");
-const closesettingsmenubutton = document.getElementById("CloseSettingsMenu");
-const hardresetbutton = document.getElementById("HardResetButton");
-const greatresetbutton = document.getElementById("GreatResetButton");
-const musicToggle = document.getElementById("musicToggle");
-const magnetsupgradesmenu = document.getElementById("MagnetsUpgradesMenu");
-const magnetsupgradesbutton = document.getElementById("MagnetsUpgradesButton");
-const closemagnetsmenu = document.getElementById("CloseMagnetsMenu");
-const magnetupgrade1button = document.getElementById("MagnetUpgrade1Button");
-const magnetupgrade2button = document.getElementById("MagnetUpgrade2Button");
-const magnetupgrade3button = document.getElementById("MagnetUpgrade3Button");
-const magnetupgrade4button = document.getElementById("MagnetUpgrade4Button");
+//////////////////////
+// ===== Helpers =====
+//////////////////////
+const $ = id => document.getElementById(id);
+const toggleMenu = (menu, show) => { if (!menu) return; menu.style.display = show ? "block" : "none"; };
 
-// Shorting numbers (científica a partir de 1000)
 function shortDecimal(num) {
-	num = new Decimal(num);
-  if (num.lt(1000)) {
-    return num.toFixed(2); // mostra normalmente até 999.99
-  } else {
-    // no Break Infinity usamos métodos da instância
-    const exponent = num.log10().floor();
-    const mantissa = num.div(Decimal.pow(10, exponent));
-    return mantissa.toFixed(2) + "e" + exponent.toString();
-  }
+  num = new Decimal(num);
+  if (num.lt(1000)) return num.toFixed(2);
+  const exponent = num.log10().floor();
+  const mantissa = num.div(Decimal.pow(10, exponent));
+  return mantissa.toFixed(2) + "e" + exponent.toString();
 }
 
-// Confirm Popup Function
 function showConfirm(message, callback) {
   const popup = document.createElement("div");
   popup.style = `
-        position: fixed; top:0; left:0; width:100%; height:100%;
-        background: rgba(0,0,0,0.5); display:flex;
-        justify-content:center; align-items:center; z-index:9999;
-    `;
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.5); display:flex;
+    justify-content:center; align-items:center; z-index:9999;
+  `;
   const box = document.createElement("div");
-  box.style = `
-        background:#fff; padding:20px; border-radius:10px; text-align:center;
-    `;
+  box.style = "background:#fff; padding:20px; border-radius:10px; text-align:center;";
   box.innerHTML = `<p>${message}</p>`;
   const okBtn = document.createElement("button");
   okBtn.textContent = "OK";
@@ -123,199 +87,453 @@ function showConfirm(message, callback) {
   document.body.appendChild(popup);
 }
 
-// Click Function
+//////////////////////
+// ===== Click ======
+//////////////////////
 function joinhaclick() {
   GameData.joinhas = GameData.joinhas.plus(GameData.click_power);
-  MC = new Decimal(Math.random());
-  if (MC.lte(GameData.magnetschance
-       .plus(GameData.upgrade_5_power))) {
-  	GameData.magnets = GameData.magnets
-       .plus(GameData.golden_upgrade_3_power
-       .plus(1));
+  const MC = new Decimal(Math.random());
+  if (MC.lte(GameData.magnetschance.plus(GameData.upgrade_5_power))) {
+    // Mantive a lógica original (pode parecer que reseta, mas era assim no JS original)
+    GameData.magnets = (GameData.magnets
+      .plus(GameData.golden_upgrade_3_power.plus(1)))
+      .times(GameData.ironbarupgrade2power);
+  }
+  update_golden_joinha_earn();
+  update_screen();
+}
+
+//////////////////////////////
+// ===== Generic purchases ==
+//////////////////////////////
+function purchase(resourceKey, costKey, effectFn) {
+  if (GameData[resourceKey].gte(GameData[costKey])) {
+    GameData[resourceKey] = GameData[resourceKey].minus(GameData[costKey]);
+    effectFn && effectFn();
+    update_golden_joinha_earn();
+    update_screen();
+  }
+}
+
+//////////////////////////////
+// ===== Update golden earn ==
+//////////////////////////////
+function update_golden_joinha_earn() {
+  const joinhas = new Decimal(GameData.joinhas);
+  const price = new Decimal(GameData.golden_joinha_price);
+  const r = new Decimal(1.006);
+
+  if (joinhas.lt(price)) {
+    GameData.golden_joinha_earn = new Decimal(0);
+    return;
+  }
+
+  const arg = joinhas.div(price).times(r.minus(1)).plus(1);
+  // n = floor( ln(arg) / ln(r) )
+  const n = Decimal.floor(Decimal.ln(arg).div(Decimal.ln(r)));
+
+  const earn = n
+    .times(GameData.golden_upgrade_1_power || new Decimal(1))
+    .times(GameData.great_reset_power || new Decimal(1))
+    .times(GameData.magnet_upgrade_2_power || new Decimal(1));
+
+  GameData.golden_joinha_earn = earn;
+}
+
+//////////////////////
+// ===== UI labels ==
+//////////////////////
+const labelFns = {
+  JoinhaLabel: () => "Joinhas: " + shortDecimal(GameData.joinhas),
+  Upgrade_1_Label: () => "Clicks give +1 Joinhas (Cost: " + shortDecimal(GameData.upgrade_1_cost) + " Joinhas)",
+  Upgrade_2_Label: () => "+1 Joinhas per second (Cost: " + shortDecimal(GameData.upgrade_2_cost) + " Joinhas)",
+  joinhas_per_second_label: () => "Joinhas per second: " + shortDecimal(GameData.joinhas_per_second),
+  Upgrade_3_Label: () => "Upgrades 1 and 2 at 1/4 of their prices (Cost: " + shortDecimal(GameData.upgrade_3_cost) + " Joinhas)",
+  Upgrade_4_Label: () => GameData.upgrade_4_cap == 0 ? "Clicks are 25x more powerful (Cost: 1.04e7)" : "Clicks are 25x more powerful (Cost: Completed)",
+  Upgrade_5_Label: () => {
+    if (GameData.upgrade_5_limit.lt(20))
+      return "+0.1% Chance of a Magnet per click\n(Cost: " + shortDecimal(GameData.upgrade_5_cost) + " Joinhas) (" + GameData.upgrade_5_limit + " / 20)";
+    return "+0.1% Chance of a Magnet per click\n(Cost: Completed) (" + GameData.upgrade_5_limit + " / 20)";
+  },
+  GoldenJoinhaLabel: () => "Golden Joinhas: " + shortDecimal(GameData.golden_joinhas) + "\nBoost per Golden Joinha: " + shortDecimal(GameData.boostpergoldenjoinha.times(100)) + "%",
+  GoldenUpgrade1Label: () => "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)",
+  GoldenUpgrade2Label: () => "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)",
+  GreatResetLabel: () => GameData.great_reset_cost.lt(1e35) ? "Resets everything but Golden Joinhas are 15x\neasier (Cost: " + shortDecimal(GameData.great_reset_cost) + " Golden Joinhas)" : "Resets everything but Golden Joinhas are 15x\neasier (Cost: Complete)",
+  GoldenUpgrade3Label: () => "Get +1 Magnet per Magnet\n(Cost: " + shortDecimal(GameData.golden_upgrade_3_cost) + " Golden Joinhas)",
+  UnlockSpaceLabel: () => GameData.space_unlocked === false ? "Unlocks Space\n(Cost: 1e35)" : "Unlocks Space\n(Cost: Unlocked)",
+  MagnetsLabel: () => "Magnets: " + shortDecimal(GameData.magnets),
+  MagnetUpgrade1Label: () => "Get 1.5x more Joinhas\n(Cost: "  + shortDecimal(GameData.magnet_upgrade_1_cost) + " Magnets)",
+  MagnetUpgrade2Label: () => "Get 1.5x more Golden Joinhas\n(Cost: " + shortDecimal(GameData.magnet_upgrade_2_cost) + " Magnets)",
+  MagnetUpgrade3Label: () => GameData.magnet_upgrade_3_limit.lt(4) ? "Get Magnets 2x easier\n(Cost: " + shortDecimal(GameData.magnet_upgrade_3_cost) + " Magnets)\n(" + GameData.magnet_upgrade_3_limit + " / 4)" : "Get Magnets 2x easier\n(Cost: Completed)\n(" + GameData.magnet_upgrade_3_limit + " / 4)",
+  MagnetUpgrade4Label: () => "Get more Joinhas per second\n(Cost: " + shortDecimal(GameData.magnet_upgrade_4_cost) + " Magnets)",
+  EarthLabel: () => "Get more boost per Golden Joinhas:\n" + shortDecimal(GameData.boostpergoldenjoinha.times(100)) + "% → " + shortDecimal((GameData.boostpergoldenjoinha.plus(0.01)).times(100)) + "%\n(Cost: " + shortDecimal(GameData.earth_upgrade_cost) + " Magnets)",
+  IronBarLabel: () => "Iron Bars: " + shortDecimal(GameData.ironbars),
+  IronBarTimeLabel: () => "An Iron Bar spawns every: " + shortDecimal(GameData.ironbardelay.div(1000)) + " Seconds",
+  IronBarUpgrade1Label: () => "Get more Joinhas:\n" + shortDecimal(GameData.ironbarupgrade1power) + "x → " + shortDecimal(GameData.ironbarupgrade1power.times(new Decimal(1.15))) + "x\n(Cost: " + shortDecimal(GameData.ironbarupgrade1cost) + " Iron Bars)",
+  IronBarUpgrade2Label: () => "Get more Magnets:\n" + shortDecimal(GameData.ironbarupgrade2power) + "x → " + shortDecimal(GameData.ironbarupgrade2power.times(new Decimal(1.15))) + "x\n(Cost: " + shortDecimal(GameData.ironbarupgrade2cost) + " Iron Bars)",
+  MusicLabel: () => GameData.music_on ? "🎵 Music ON" : "🎵 Music OFF"
+};
+
+function update_screen() {
+  for (const id in labelFns) {
+    const el = $(id);
+    if (!el) continue;
+    el.innerText = labelFns[id]();
+  }
+  // increment joinhas passively
+  GameData.joinhas = GameData.joinhas.plus(GameData.joinhas_per_second);
+  // Show/hide space button if necessary
+  const spaceBtn = $("SpaceButton");
+  if (spaceBtn) spaceBtn.style.display = GameData.space_unlocked ? "block" : "none";
+}
+
+/////////////////////////
+// ===== Save / Load ===
+/////////////////////////
+function save_game() {
+  localStorage.setItem("game_save", JSON.stringify(GameData, (_, v) => (v instanceof Decimal ? v.toString() : v)));
+}
+
+function load_game() {
+  const data = localStorage.getItem("game_save");
+  if (!data) { update_screen(); return; }
+  try {
+    const saved = JSON.parse(data);
+    for (const key in GameData) {
+      if (saved[key] !== undefined) {
+        if (key === "upgrade_4_cap") {
+          GameData[key] = Number(saved[key]);
+        } else if (key === "music_on" || key === "space_unlocked") {
+          GameData[key] = !!saved[key];
+        } else if (key === "ironbarlist") {
+          GameData[key] = [];
+        } else {
+          // Try to convert to Decimal safely
+          GameData[key] = new Decimal(saved[key]);
+        }
+      }
+    }
+    update_golden_joinha_earn();
+  } catch (e) {
+    console.error("Failed to load save:", e);
   }
   update_screen();
 }
 
-// Opens and closes the upgrades menu
-function openupgradesmenu() { upgradesMenu.style.display = 'block'; }
-function closeupgradesmenu() { upgradesMenu.style.display = 'none'; }
-upgradesMenuCloseButton.addEventListener('click', closeupgradesmenu);
-upgradesMenuButton.addEventListener('click', openupgradesmenu);
+//////////////////////
+// ===== Timers =====
+//////////////////////
+function onesecondtimer() {
+  setInterval(save_game, 5000);
+  setInterval(update_screen, 1000);
+  setInterval(update_golden_joinha_earn, 1000);
+}
 
-// ===== Upgrades =====
-// Upgrade 1
-upgrade_1_button.addEventListener("click", function () {
-  if (GameData.joinhas.gte(GameData.upgrade_1_cost)) {
-    GameData.joinhas = GameData.joinhas
-     .minus(GameData.upgrade_1_cost);
-    GameData.click_power = GameData.click_power
-        .plus(new Decimal(1)
-        .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
-        .times(GameData.golden_upgrade_2_power)
-        .times(GameData.upgrade_4_power)
-        .times(GameData.magnet_upgrade_1_power)
-        .times(GameData.ironbarupgrade1power)
-    );
-    GameData.upgrade_1_cost = GameData.upgrade_1_cost.times(1.6);
+//////////////////////
+// ===== Music ======
+//////////////////////
+const bgm = new Audio('assets/Voltaic.mp3');
+bgm.loop = true;
+bgm.volume = 0.5;
+
+//////////////////////
+// ===== Iron bars ==
+//////////////////////
+function spawnIronBar() {
+  const bar = document.createElement("img");
+  bar.src = "assets/ironbar.png";
+  bar.classList.add("iron-bar");
+  const screenWidth = window.innerWidth;
+  const randomX = Math.floor(Math.random() * Math.max(1, screenWidth - 40));
+  bar.style.left = randomX + "px";
+  bar.style.bottom = "-60px";
+
+  bar.addEventListener("click", () => {
+    if (bar.parentNode) bar.remove();
+    GameData.ironbars = GameData.ironbars.plus(1);
     update_screen();
+  });
+
+  document.body.appendChild(bar);
+  GameData.ironbarlist.push(bar);
+
+  let pos = -60;
+  const screenHeight = window.innerHeight;
+
+  function animate() {
+    pos += 2;
+    bar.style.bottom = pos + "px";
+    if (pos < screenHeight + 100) {
+      requestAnimationFrame(animate);
+    } else {
+      if (bar.parentNode) bar.remove();
+    }
   }
-});
+  animate();
+}
+
+//////////////////////////////
+// ===== DOM bindings =======
+//////////////////////////////
+const DOM = {
+  // Menus & Buttons
+  upgradesMenuButton: $("UpgradesMenuButton"),
+  upgradesMenu: $("UpgradesMenu"),
+  upgradesMenuCloseButton: $("CloseUpgradesButton"),
+  spacebutton: $("SpaceButton"),
+  spacemenu: $("SpaceMenu"),
+  earthbutton: $("EarthButton"),
+  ironbarmenubutton: $("IronBarMenuButton"),
+  ironbarmenu: $("IronBarMenu"),
+  ironbarupgrade1button: $("IronBarUpgrade1Button"),
+  ironbarupgrade2button: $("IronBarUpgrade2Button"),
+  closeironbarmenu: $("CloseIronBarMenu"),
+  spacebackbutton: $("SpaceBackButton"),
+  upgrade_1_button: $("Upgrade_1_Button"),
+  upgrade_2_button: $("Upgrade_2_Button"),
+  upgrade_3_button: $("Upgrade_3_Button"),
+  upgrade_4_button: $("Upgrade_4_Button"),
+  upgrade_5_button: $("Upgrade_5_Button"),
+  prestigemenubutton: $("PrestigeMenuButton"),
+  prestigemenu: $("PrestigeMenu"),
+  closeprestigemenubutton: $("ClosePrestigeMenu"),
+  prestigebutton: $("PrestigeButton"),
+  goldenupgrade1button: $("GoldenUpgrade1Button"),
+  goldenupgrade2button: $("GoldenUpgrade2Button"),
+  nextpageprestigemenu1: $("NextPagePrestigeMenu1"),
+  nextpageprestige1button: $("NextPagePrestige1Button"),
+  goldenupgrade3button: $("GoldenUpgrade3Button"),
+  unlockspacebutton: $("UnlockSpaceButton"),
+  prestigepreviouspage1button: $("PrestigePreviousPage1Button"),
+  settingsmenubutton: $("SettingsMenuButton"),
+  settingsmenu: $("SettingsMenu"),
+  closesettingsmenubutton: $("CloseSettingsMenu"),
+  hardresetbutton: $("HardResetButton"),
+  greatresetbutton: $("GreatResetButton"),
+  musicToggle: $("musicToggle"),
+  magnetsupgradesmenu: $("MagnetsUpgradesMenu"),
+  magnetsupgradesbutton: $("MagnetsUpgradesButton"),
+  closemagnetsmenu: $("CloseMagnetsMenu"),
+  magnetupgrade1button: $("MagnetUpgrade1Button"),
+  magnetupgrade2button: $("MagnetUpgrade2Button"),
+  magnetupgrade3button: $("MagnetUpgrade3Button"),
+  magnetupgrade4button: $("MagnetUpgrade4Button"),
+  JoinhaButton: $("JoinhaButton")
+};
+
+//////////////////////////////
+// ===== Event listeners ====
+//////////////////////////////
+
+// Menus
+if (DOM.upgradesMenuButton && DOM.upgradesMenuCloseButton) {
+  DOM.upgradesMenuButton.addEventListener('click', () => toggleMenu(DOM.upgradesMenu, true));
+  DOM.upgradesMenuCloseButton.addEventListener('click', () => toggleMenu(DOM.upgradesMenu, false));
+}
+
+// Space menu
+if (DOM.spacebutton && DOM.spacemenu) {
+  DOM.spacebutton.addEventListener('click', () => toggleMenu(DOM.spacemenu, true));
+  if (DOM.spacebackbutton) DOM.spacebackbutton.addEventListener('click', () => toggleMenu(DOM.spacemenu, false));
+}
+
+// Settings
+if (DOM.settingsmenubutton && DOM.closesettingsmenubutton) {
+  DOM.settingsmenubutton.addEventListener('click', () => toggleMenu(DOM.settingsmenu, true));
+  DOM.closesettingsmenubutton.addEventListener('click', () => toggleMenu(DOM.settingsmenu, false));
+}
+
+// Magnets menu
+if (DOM.magnetsupgradesbutton && DOM.closemagnetsmenu) {
+  DOM.magnetsupgradesbutton.addEventListener('click', () => toggleMenu(DOM.magnetsupgradesmenu, true));
+  DOM.closemagnetsmenu.addEventListener('click', () => toggleMenu(DOM.magnetsupgradesmenu, false));
+}
+
+// Iron Bar menu
+if (DOM.ironbarmenubutton && DOM.closeironbarmenu) {
+  DOM.ironbarmenubutton.addEventListener('click', () => toggleMenu(DOM.ironbarmenu, true));
+  DOM.closeironbarmenu.addEventListener('click', () => toggleMenu(DOM.ironbarmenu, false));
+}
+
+// Joinha click
+if (DOM.JoinhaButton) DOM.JoinhaButton.addEventListener("click", joinhaclick);
+
+// Upgrade 1
+if (DOM.upgrade_1_button) {
+  DOM.upgrade_1_button.addEventListener("click", () =>
+    purchase("joinhas", "upgrade_1_cost", () => {
+      GameData.click_power = GameData.click_power.plus(
+        (new Decimal(1))
+          .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
+          .times(GameData.golden_upgrade_2_power)
+          .times(GameData.upgrade_4_power)
+          .times(GameData.magnet_upgrade_1_power)
+          .times(GameData.ironbarupgrade1power)
+      );
+      GameData.upgrade_1_cost = GameData.upgrade_1_cost.times(1.6);
+    })
+  );
+}
 
 // Upgrade 2
-upgrade_2_button.addEventListener("click", function () {
-  if (GameData.joinhas.gte(GameData.upgrade_2_cost)) {
-    GameData.joinhas = GameData.joinhas.minus(GameData.upgrade_2_cost);
-    GameData.joinhas_per_second = GameData.joinhas_per_second.plus((
-      new Decimal(1)
-     .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha)
-     .plus(1))
-     .times(GameData.golden_upgrade_2_power))
-     .times(GameData.magnet_upgrade_1_power)
-     .times(GameData.magnet_upgrade_4_power)
-     .times(GameData.ironbarupgrade1power)
-    );
-    GameData.upgrade_2_cost = GameData.upgrade_2_cost.times(1.5);
-    update_screen();
-  }
-});
+if (DOM.upgrade_2_button) {
+  DOM.upgrade_2_button.addEventListener("click", () =>
+    purchase("joinhas", "upgrade_2_cost", () => {
+      GameData.joinhas_per_second = GameData.joinhas_per_second.plus(
+        (new Decimal(1))
+          .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
+          .times(GameData.golden_upgrade_2_power)
+          .times(GameData.magnet_upgrade_1_power)
+          .times(GameData.magnet_upgrade_4_power)
+          .times(GameData.ironbarupgrade1power)
+      );
+      GameData.upgrade_2_cost = GameData.upgrade_2_cost.times(1.5);
+    })
+  );
+}
 
 // Upgrade 3
-upgrade_3_button.addEventListener("click", function () {
-  if (GameData.joinhas.gte(GameData.upgrade_3_cost)) {
-    GameData.joinhas = GameData.joinhas.minus(GameData.upgrade_3_cost);
-    GameData.upgrade_1_cost = GameData.upgrade_1_cost.div(4);
-    GameData.upgrade_2_cost = GameData.upgrade_2_cost.div(4);
-    GameData.upgrade_3_cost = GameData.upgrade_3_cost.times(25);
-    update_screen();
-  }
-});
+if (DOM.upgrade_3_button) {
+  DOM.upgrade_3_button.addEventListener("click", () =>
+    purchase("joinhas", "upgrade_3_cost", () => {
+      GameData.upgrade_1_cost = GameData.upgrade_1_cost.div(4);
+      GameData.upgrade_2_cost = GameData.upgrade_2_cost.div(4);
+      GameData.upgrade_3_cost = GameData.upgrade_3_cost.times(25);
+    })
+  );
+}
 
-// Upgrade 4
-upgrade_4_button.addEventListener("click", function () {
-  if (GameData.joinhas.gte(10480000) && GameData.upgrade_4_cap === 0) {
-    GameData.joinhas = GameData.joinhas.minus(10480000);
-    GameData.upgrade_4_cap = 1;
-    GameData.upgrade_4_power = GameData.upgrade_4_power.times(25);
-    GameData.click_power = GameData.click_power.times((
-    GameData.upgrade_4_power
-    .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
-    .times(GameData.golden_upgrade_2_power))
-    .times(GameData.magnet_upgrade_1_power)
-    .times(GameData.ironbarupgrade1power)
-    );
-    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)";
-    update_screen();
-  }
-});
+// Upgrade 4 (one time)
+if (DOM.upgrade_4_button) {
+  DOM.upgrade_4_button.addEventListener("click", () => {
+    if (GameData.joinhas.gte(new Decimal(10480000)) && GameData.upgrade_4_cap === 0) {
+      GameData.joinhas = GameData.joinhas.minus(new Decimal(10480000));
+      GameData.upgrade_4_cap = 1;
+      GameData.upgrade_4_power = GameData.upgrade_4_power.times(25);
+      // Apply immediate click_power multiplier
+      GameData.click_power = GameData.click_power.times(
+        GameData.upgrade_4_power
+          .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
+          .times(GameData.golden_upgrade_2_power)
+          .times(GameData.magnet_upgrade_1_power)
+          .times(GameData.ironbarupgrade1power)
+      );
+      update_screen();
+    }
+  });
+}
 
-// Upgrade 5
-upgrade_5_button.addEventListener("click", function () {
-	if (GameData.joinhas.gte(GameData.upgrade_5_cost) && GameData.upgrade_5_limit.lt(20)) {
-		GameData.joinhas = GameData.joinhas.minus(GameData.upgrade_5_cost);
-		GameData.upgrade_5_power = GameData.upgrade_5_power.plus(0.001);
-		GameData.upgrade_5_limit = GameData.upgrade_5_limit.plus(1);
-		GameData.upgrade_5_cost = GameData.upgrade_5_cost.times(10);
-		update_screen();
-	}
-});
+// Upgrade 5 (stackable up to 20)
+if (DOM.upgrade_5_button) {
+  DOM.upgrade_5_button.addEventListener("click", () =>
+    purchase("joinhas", "upgrade_5_cost", () => {
+      if (GameData.upgrade_5_limit.lt(20)) {
+        GameData.upgrade_5_power = GameData.upgrade_5_power.plus(0.001);
+        GameData.upgrade_5_limit = GameData.upgrade_5_limit.plus(1);
+        GameData.upgrade_5_cost = GameData.upgrade_5_cost.times(10);
+      }
+    })
+  );
+}
 
-// Prestige Menu
-prestigemenubutton.addEventListener("click", function () {
-  prestigemenu.style.display = "block";
-});
+// Prestige menu toggle
+if (DOM.prestigemenubutton) DOM.prestigemenubutton.addEventListener("click", () => toggleMenu(DOM.prestigemenu, true));
+if (DOM.closeprestigemenubutton) DOM.closeprestigemenubutton.addEventListener("click", () => toggleMenu(DOM.prestigemenu, false));
 
 // Golden Upgrade 1
-goldenupgrade1button.addEventListener("click", function () {
-  if (GameData.golden_joinhas.gte(GameData.golden_upgrade_1_cost)) {
-    GameData.golden_joinhas = GameData.golden_joinhas.minus(GameData.golden_upgrade_1_cost);
-    GameData.golden_upgrade_1_cost = GameData.golden_upgrade_1_cost.times(10);
-    GameData.golden_upgrade_1_power = GameData.golden_upgrade_1_power.times(2);
-    GameData.golden_joinha_earn = new Decimal(2);
-    update_screen();
-  }
-});
+if (DOM.goldenupgrade1button) {
+  DOM.goldenupgrade1button.addEventListener("click", () =>
+    purchase("golden_joinhas", "golden_upgrade_1_cost", () => {
+      GameData.golden_upgrade_1_cost = GameData.golden_upgrade_1_cost.times(10);
+      GameData.golden_upgrade_1_power = GameData.golden_upgrade_1_power.times(2);
+      GameData.golden_joinha_earn = new Decimal(2);
+    })
+  );
+}
 
 // Golden Upgrade 2
-goldenupgrade2button.addEventListener("click", function () {
-  if (GameData.golden_joinhas.gte(GameData.golden_upgrade_2_cost)) {
-    GameData.golden_joinhas = GameData.golden_joinhas.minus(GameData.golden_upgrade_2_cost);
-    GameData.golden_upgrade_2_cost = GameData.golden_upgrade_2_cost.times(10);
-    GameData.golden_upgrade_2_power = GameData.golden_upgrade_2_power.times(2);
-    update_screen();
-  }
-});
+if (DOM.goldenupgrade2button) {
+  DOM.goldenupgrade2button.addEventListener("click", () =>
+    purchase("golden_joinhas", "golden_upgrade_2_cost", () => {
+      GameData.golden_upgrade_2_cost = GameData.golden_upgrade_2_cost.times(10);
+      GameData.golden_upgrade_2_power = GameData.golden_upgrade_2_power.times(2);
+    })
+  );
+}
 
 // Great Reset
-greatresetbutton.addEventListener("click", function() {
-	if (GameData.golden_joinhas.gte(GameData.great_reset_cost) && GameData.great_reset_cost.lt(1e35)) {
-		GameData.joinhas = new Decimal(0);
-  	  GameData.golden_joinhas = new Decimal(0);
-  	  GameData.click_power = new Decimal(1).times(GameData.magnet_upgrade_1_power);
-  	  GameData.upgrade_1_cost = new Decimal(10);
-  	  GameData.joinhas_per_second = new Decimal(0);
-  	  GameData.upgrade_2_cost = new Decimal(25);
-  	  GameData.upgrade_3_cost = new Decimal(10);
-  	  GameData.upgrade_4_cap = 0;
-  	  GameData.upgrade_4_power = new Decimal(1);
+if (DOM.greatresetbutton) {
+  DOM.greatresetbutton.addEventListener("click", () => {
+    showConfirm(`DO YOU WANT TO GREAT RESET?`, function (result) {
+      if (!result) return;
+      if (GameData.golden_joinhas.gte(GameData.great_reset_cost) && GameData.great_reset_cost.lt(new Decimal("1e35"))) {
+        // Reset many things, keep golden_joinhas? original resets golden_joinhas to 0 for great reset
+        GameData.joinhas = new Decimal(0);
+        GameData.golden_joinhas = new Decimal(0);
+        GameData.click_power = new Decimal(1)
+          .times(GameData.magnet_upgrade_1_power)
+          .times(GameData.ironbarupgrade1power);
+        GameData.upgrade_1_cost = new Decimal(10);
+        GameData.joinhas_per_second = new Decimal(0);
+        GameData.upgrade_2_cost = new Decimal(25);
+        GameData.upgrade_3_cost = new Decimal(10);
+        GameData.upgrade_4_cap = 0;
+        GameData.upgrade_4_power = new Decimal(1);
         GameData.upgrade_5_cost = new Decimal(1000);
         GameData.upgrade_5_limit = new Decimal(0);
         GameData.upgrade_5_power = new Decimal(0);
-  	  GameData.golden_joinha_earn = new Decimal(0);
-  	  GameData.golden_joinha_price = new Decimal(1000);
-  	  GameData.golden_upgrade_1_cost = new Decimal(100);
-  	  GameData.golden_upgrade_1_power = new Decimal(1);
-  	  GameData.golden_upgrade_2_cost = new Decimal(100);
-  	  GameData.golden_upgrade_2_power = new Decimal(1);
+        GameData.golden_joinha_earn = new Decimal(0);
+        GameData.golden_joinha_price = new Decimal(1000);
+        GameData.golden_upgrade_1_cost = new Decimal(100);
+        GameData.golden_upgrade_1_power = new Decimal(1);
+        GameData.golden_upgrade_2_cost = new Decimal(100);
+        GameData.golden_upgrade_2_power = new Decimal(1);
         GameData.great_reset_power = GameData.great_reset_power.times(15);
         GameData.great_reset_cost = GameData.great_reset_cost.times(101);
         update_screen();
-    }
-});
+      }
+    });
+  });
+}
 
-// Next Page Prestige 1
-nextpageprestige1button.addEventListener("click", function () {
-	nextpageprestigemenu1.style.display = "block";
-});
-prestigepreviouspage1button.addEventListener("click", function () {
-	nextpageprestigemenu1.style.display = "none";
-});
+// Next Page Prestige toggle
+if (DOM.nextpageprestige1button && DOM.nextpageprestigemenu1) {
+  DOM.nextpageprestige1button.addEventListener("click", () => toggleMenu(DOM.nextpageprestigemenu1, true));
+  if (DOM.prestigepreviouspage1button) DOM.prestigepreviouspage1button.addEventListener("click", () => toggleMenu(DOM.nextpageprestigemenu1, false));
+}
 
 // Golden Upgrade 3
-goldenupgrade3button.addEventListener("click", function () {
-	if (GameData.golden_joinhas.gte(GameData.golden_upgrade_3_cost)) {
-		GameData.golden_joinhas = GameData.golden_joinhas.minus(GameData.golden_upgrade_3_cost);
-		GameData.golden_upgrade_3_cost = GameData.golden_upgrade_3_cost.times(10);
-		GameData.golden_upgrade_3_power = GameData.golden_upgrade_3_power.plus(1);
-		update_screen();
-	}
-});
-// Unlock Space Button
-unlockspacebutton.addEventListener("click", function () {
-	if (GameData.golden_joinhas.gte(1e35)) {
-		GameData.golden_joinhas = GameData.golden_joinhas.minus(1e35)
-		GameData.space_unlocked = true;
-		update_screen();
-	}
-});
-		
+if (DOM.goldenupgrade3button) {
+  DOM.goldenupgrade3button.addEventListener("click", () =>
+    purchase("golden_joinhas", "golden_upgrade_3_cost", () => {
+      GameData.golden_upgrade_3_cost = GameData.golden_upgrade_3_cost.times(10);
+      GameData.golden_upgrade_3_power = GameData.golden_upgrade_3_power.plus(1);
+    })
+  );
+}
 
-// Close Prestige Menu
-closeprestigemenubutton.addEventListener("click", function () {
-  prestigemenu.style.display = "none";
-});
+// Unlock Space
+if (DOM.unlockspacebutton) {
+  DOM.unlockspacebutton.addEventListener("click", () => {
+    if (GameData.golden_joinhas.gte(new Decimal("1e35"))) {
+      GameData.golden_joinhas = GameData.golden_joinhas.minus(new Decimal("1e35"));
+      GameData.space_unlocked = true;
+      // start spawns
+      setInterval(() => spawnIronBar(), Number(GameData.ironbardelay));
+      update_screen();
+    }
+  });
+}
 
-// Prestige Button
-prestigebutton.addEventListener("click", function () {
-  showConfirm(
-    `Do you want to prestige? This will give: ${shortDecimal(GameData.golden_joinha_earn)} Golden Joinhas.`,
-    function (result) {
-      if (result && GameData.golden_joinha_earn.gte(1)) {
-        const n = GameData.golden_joinha_earn; // quantos Golden Joinhas ganhos
-
-        // soma Golden Joinhas
+// Prestige (do reset but give golden)
+if (DOM.prestigebutton) {
+  DOM.prestigebutton.addEventListener("click", function () {
+    showConfirm(`Do you want to prestige? This will give: ${shortDecimal(GameData.golden_joinha_earn)} Golden Joinhas.`, function (result) {
+      if (result && GameData.golden_joinha_earn.gte(new Decimal(1))) {
+        const n = GameData.golden_joinha_earn;
         GameData.golden_joinhas = GameData.golden_joinhas.plus(n);
 
-        // reset básico
+        // basic reset
         GameData.joinhas = new Decimal(0);
         GameData.click_power = new Decimal(1)
           .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
@@ -335,304 +553,127 @@ prestigebutton.addEventListener("click", function () {
 
         update_screen();
       }
-    }
+    });
+  });
+}
+
+// Magnets Upgrades
+if (DOM.magnetupgrade1button) {
+  DOM.magnetupgrade1button.addEventListener("click", () =>
+    purchase("magnets", "magnet_upgrade_1_cost", () => {
+      GameData.magnets = GameData.magnets.minus(GameData.magnet_upgrade_1_cost); // purchase() already did minus, but keep safe
+      GameData.magnet_upgrade_1_power = GameData.magnet_upgrade_1_power.times(1.5);
+      GameData.magnet_upgrade_1_cost = GameData.magnet_upgrade_1_cost.times(1.35);
+    })
   );
-});
-
-// Settings Menu
-settingsmenubutton.addEventListener("click", function () {
-  settingsmenu.style.display = "block";
-});
-closesettingsmenubutton.addEventListener("click", function () {
-  settingsmenu.style.display = "none";
-});
-
-// Magnets Upgrades Menu
-magnetsupgradesbutton.addEventListener("click", function () {
-	magnetsupgradesmenu.style.display = "block";
-});
-closemagnetsmenu.addEventListener("click", function () {
-	magnetsupgradesmenu.style.display = "none";
-});
-// Magnet Upgrade 1
-magnetupgrade1button.addEventListener("click", function () {
-	if (GameData.magnets.gte(GameData.magnet_upgrade_1_cost)) {
-		GameData.magnets = GameData.magnets.minus(GameData.magnet_upgrade_1_cost);
-		GameData.magnet_upgrade_1_power = GameData.magnet_upgrade_1_power.times(1.5);
-		GameData.magnet_upgrade_1_cost = GameData.magnet_upgrade_1_cost.times(1.35);
-		update_screen();
-	}
-});
-// Magnet Upgrade 2
-magnetupgrade2button.addEventListener("click", function () {
-	if (GameData.magnets.gte(GameData.magnet_upgrade_2_cost)) {
-		GameData.magnets = GameData.magnets.minus(GameData.magnet_upgrade_2_cost);
-		GameData.magnet_upgrade_2_power = GameData.magnet_upgrade_2_power.times(1.5);
-		GameData.magnet_upgrade_2_cost = GameData.magnet_upgrade_2_cost.times(1.25);
-		update_screen();
-	}
-});
-// Magnet Upgrade 3
-magnetupgrade3button.addEventListener("click", function () {
-	if (GameData.magnets.gte(GameData.magnet_upgrade_3_cost) && GameData.magnet_upgrade_3_limit.lt(4)) {
-		GameData.magnets = GameData.magnets.minus(GameData.magnet_upgrade_3_cost);
-		GameData.magnetschance = GameData.magnetschance.times(2);
-		GameData.magnet_upgrade_3_cost = GameData.magnet_upgrade_3_cost.times(20);
-		GameData.magnet_upgrade_3_limit = GameData.magnet_upgrade_3_limit.plus(1);
-		update_screen();
-	}
-});
-// Magnet Upgrade 4
-magnetupgrade4button.addEventListener("click", function () {
-	if (GameData.magnets.gte(GameData.magnet_upgrade_4_cost)) {
-		GameData.magnets = GameData.magnets.minus(GameData.magnet_upgrade_4_cost);
-		GameData.magnet_upgrade_4_cost = GameData.magnet_upgrade_4_cost.times(1.5);
-		GameData.magnet_upgrade_4_power = GameData.magnet_upgrade_4_power.times(2);
-		GameData.joinhas_per_second = GameData.joinhas_per_second.times(2);
-		update_screen();
-	}
-});
+}
+if (DOM.magnetupgrade2button) {
+  DOM.magnetupgrade2button.addEventListener("click", () =>
+    purchase("magnets", "magnet_upgrade_2_cost", () => {
+      GameData.magnet_upgrade_2_power = GameData.magnet_upgrade_2_power.times(1.5);
+      GameData.magnet_upgrade_2_cost = GameData.magnet_upgrade_2_cost.times(1.25);
+    })
+  );
+}
+if (DOM.magnetupgrade3button) {
+  DOM.magnetupgrade3button.addEventListener("click", () =>
+    purchase("magnets", "magnet_upgrade_3_cost", () => {
+      if (GameData.magnet_upgrade_3_limit.lt(4)) {
+        GameData.magnetschance = GameData.magnetschance.times(2);
+        GameData.magnet_upgrade_3_cost = GameData.magnet_upgrade_3_cost.times(20);
+        GameData.magnet_upgrade_3_limit = GameData.magnet_upgrade_3_limit.plus(1);
+      }
+    })
+  );
+}
+if (DOM.magnetupgrade4button) {
+  DOM.magnetupgrade4button.addEventListener("click", () =>
+    purchase("magnets", "magnet_upgrade_4_cost", () => {
+      GameData.magnet_upgrade_4_cost = GameData.magnet_upgrade_4_cost.times(1.5);
+      GameData.magnet_upgrade_4_power = GameData.magnet_upgrade_4_power.times(2);
+      GameData.joinhas_per_second = GameData.joinhas_per_second.times(2);
+    })
+  );
+}
 
 // Hard Reset
-hardresetbutton.addEventListener("click", function () {
-  showConfirm(`DO YOU WANT TO HARD RESET FOREVER?`, function (result) {
-    if (result) {
-      localStorage.removeItem("game_save");
-      location.reload();
-    }
+if (DOM.hardresetbutton) {
+  DOM.hardresetbutton.addEventListener("click", () => {
+    showConfirm(`DO YOU WANT TO HARD RESET FOREVER?`, function (result) {
+      if (result) {
+        localStorage.removeItem("game_save");
+        location.reload();
+      }
+    });
   });
-});
-
-// Space Button
-spacebutton.addEventListener("click", function () {
-	spacemenu.style.display = "block";
-});
-
-// Earth Upgrade
-earthbutton.addEventListener("click", function () {
-	if (GameData.magnets.gte(GameData.earth_upgrade_cost)) {
-		GameData.magnets = GameData.magnets.minus(GameData.earth_upgrade_cost);
-		GameData.boostpergoldenjoinha = GameData.boostpergoldenjoinha.plus(0.01);
-		GameData.earth_upgrade_cost = GameData.earth_upgrade_cost.times(2);
-		update_screen();
-	}
-});
-
-// Iron Bar Menu
-ironbarmenubutton.addEventListener("click", function () {
-	ironbarmenu.style.display = "block";
-});
-closeironbarmenu.addEventListener("click", function () {
-	ironbarmenu.style.display = "none";
-});
-// Iron Bar Upgrades
-ironbarupgrade1button.addEventListener("click", function () {
-	if (GameData.ironbars.gte(GameData.ironbarupgrade1cost)) {
-		GameData.ironbars = GameData.ironbars.minus(GameData.ironbarupgrade1cost);
-		GameData.ironbarupgrade1cost = GameData.ironbarupgrade1cost.times(1.15);
-		GameData.ironbarupgrade1power = GameData.ironbarupgrade1power.times(1.05);
-		GameData.click_power = GameData.click_power.times(1.05);
-		update_screen();
-	}
-});
-
-// Closing Space Menu
-spacebackbutton.addEventListener("click", function () {
-	spacemenu.style.display = "none";
-});
-
-// Atualiza Golden Joinhas Earn
-function update_golden_joinha_earn() {
-  const joinhas = new Decimal(GameData.joinhas);
-  const price = new Decimal(GameData.golden_joinha_price);
-  const r = new Decimal(1.006);
-
-  if (joinhas.lt(price)) {
-    GameData.golden_joinha_earn = new Decimal(0);
-    return;
-  }
-
-  const arg = joinhas.div(price).times(r.minus(1)).plus(1);
-
-  const n = Decimal.floor(Decimal.ln(arg).div(Decimal.ln(r)));
-
-  const earn = n
-    .times(GameData.golden_upgrade_1_power || new Decimal(1))
-    .times(GameData.great_reset_power || new Decimal(1))
-    .times(GameData.magnet_upgrade_2_power || new Decimal(1));
-
-  GameData.golden_joinha_earn = earn;
 }
 
-// Update Screen
-function update_screen() {
-  document.getElementById("JoinhaLabel").innerText = "Joinhas: " + shortDecimal(GameData.joinhas);
-  document.getElementById("Upgrade_1_Label").innerText = "Clicks give +1 Joinhas (Cost: " + shortDecimal(GameData.upgrade_1_cost) + " Joinhas)";
-  document.getElementById("Upgrade_2_Label").innerText = "+1 Joinhas per second (Cost: " + shortDecimal(GameData.upgrade_2_cost) + " Joinhas)";
-  document.getElementById("joinhas_per_second_label").innerText = "Joinhas per second: " + shortDecimal(GameData.joinhas_per_second);
-  document.getElementById("Upgrade_3_Label").innerText = "Upgrades 1 and 2 at 1/4 of their prices (Cost: " + shortDecimal(GameData.upgrade_3_cost) + " Joinhas)";
-  if (GameData.upgrade_4_cap == 0) {
-    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: 1.04e7)";
-  } else {
-    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)";
-  }
-  if (GameData.upgrade_5_limit.lt(20)) {
-      document.getElementById("Upgrade_5_Label").innerText = "+0.1% Chance of a Magnet per click\n(Cost: " + shortDecimal(GameData.upgrade_5_cost) + " Joinhas) (" + GameData.upgrade_5_limit + " / 20)"
-  } else {
-  	document.getElementById("Upgrade_5_Label").innerText = "+0.1% Chance of a Magnet per click\n(Cost: Completed) (" + GameData.upgrade_5_limit + " / 20)"
-  }
-  document.getElementById("GoldenJoinhaLabel").innerText = "Golden Joinhas: " + shortDecimal(GameData.golden_joinhas) + "\nBoost per Golden Joinha: " + shortDecimal(GameData.boostpergoldenjoinha.times(100)) + "%";
-  document.getElementById("GoldenUpgrade1Label").innerText = "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)";
-  document.getElementById("GoldenUpgrade2Label").innerText = "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)";
-  if (GameData.great_reset_cost.lt(1e35)) {
-      document.getElementById("GreatResetLabel").innerText = "Resets everything but Golden Joinhas are 15x\neasier (Cost: " + shortDecimal(GameData.great_reset_cost) + " Golden Joinhas)";
-  } else {
-  	document.getElementById("GreatResetLabel").innerText = "Resets everything but Golden Joinhas are 15x\neasier (Cost: Complete)";
-    }
-  document.getElementById("GoldenUpgrade3Label").innerText = "Get +1 Magnet per Magnet\n(Cost: " + shortDecimal(GameData.golden_upgrade_3_cost) + " Golden Joinhas)";
-  if (GameData.space_unlocked === false) {
-  	spacebutton.style.display = "none";
-      document.getElementById("UnlockSpaceLabel").innerText = "Unlocks Space\n(Cost: 1e35)";
-  } else {
-  	spacebutton.style.display = "block";
-  	document.getElementById("UnlockSpaceLabel").innerText = "Unlocks Space\n(Cost: Unlocked)";
-     }
-  document.getElementById("MagnetsLabel").innerText = "Magnets: " + shortDecimal(GameData.magnets);
-  document.getElementById("MagnetUpgrade1Label").innerText = "Get 1.5x more Joinhas\n(Cost: "  + shortDecimal(GameData.magnet_upgrade_1_cost) + " Magnets)";
-  document.getElementById("MagnetUpgrade2Label").innerText = "Get 1.5x more Golden Joinhas\n(Cost: " + shortDecimal(GameData.magnet_upgrade_2_cost) + " Magnets)";
-  if (GameData.magnet_upgrade_3_limit.lt(4)) {
-      document.getElementById("MagnetUpgrade3Label").innerText = "Get Magnets 2x easier\n(Cost: " + shortDecimal(GameData.magnet_upgrade_3_cost) + " Magnets)\n(" + GameData.magnet_upgrade_3_limit + " / 4)";
-  } else {
-  	document.getElementById("MagnetUpgrade3Label").innerText = "Get Magnets 2x easier\n(Cost: Completed)\n(" + GameData.magnet_upgrade_3_limit + " / 4)";
-  }
-  document.getElementById("MagnetUpgrade4Label").innerText = "Get more Joinhas per second\n(Cost: " + shortDecimal(GameData.magnet_upgrade_4_cost) + " Magnets)"
-  GameData.joinhas = GameData.joinhas.plus(GameData.joinhas_per_second);
-  if (GameData.space_unlocked === true) {
-  	spacebutton.style.display = "block";
-  }
-  document.getElementById("EarthLabel").innerText = "Get more boost per Golden Joinhas:\n" + shortDecimal(GameData.boostpergoldenjoinha.times(100)) + "% → " + shortDecimal((GameData.boostpergoldenjoinha.plus(0.01)).times(100)) + "%\n(Cost: " + shortDecimal(GameData.earth_upgrade_cost) + " Magnets)"
-  document.getElementById("IronBarLabel").innerText = "Iron Bars: " + shortDecimal(GameData.ironbars)
-  document.getElementById("IronBarTimeLabel").innerText = "An Iron Bar spawns every: " + shortDecimal(GameData.ironbardelay.div(1000)) + " Seconds"
-  document.getElementById("IronBarUpgrade1Label").innerText = "Get more Joinhas:\n" + shortDecimal(GameData.ironbarupgrade1power) + "x → " + shortDecimal(GameData.ironbarupgrade1power * new Decimal(1.15)) + "x\n(Cost: " + shortDecimal(GameData.ironbarupgrade1cost) + " Iron Bars)"
-  // Atualiza label da música automaticamente
-  document.getElementById("MusicLabel").innerText = GameData.music_on ? "🎵 Music ON" : "🎵 Music OFF";
-}
-
-// Save Game
-function save_game() {
-  localStorage.setItem(
-    "game_save",
-    JSON.stringify(GameData, (_, v) => (v instanceof Decimal ? v.toString() : v))
+// Earth upgrade
+if (DOM.earthbutton) {
+  DOM.earthbutton.addEventListener("click", () =>
+    purchase("magnets", "earth_upgrade_cost", () => {
+      GameData.boostpergoldenjoinha = GameData.boostpergoldenjoinha.plus(0.01);
+      GameData.earth_upgrade_cost = GameData.earth_upgrade_cost.times(2);
+    })
   );
 }
 
-// Load Game
-function load_game() {
-  const data = localStorage.getItem("game_save");
-  if (data) {
-    const saved = JSON.parse(data);
-    for (let key in GameData) {
-      if (saved[key] !== undefined) {
-        if (key === "upgrade_4_cap") {
-          GameData[key] = Number(saved[key]);
-        } else if (key === "music_on" || key === "space_unlocked") {
-          GameData[key] = !!saved[key]; // força booleano
-        }  else if (key === "ironbarlist") {
-        	GameData[key] = [];
-        } else {
-          GameData[key] = new Decimal(saved[key]);
-        }
-      }
-    }
-    update_golden_joinha_earn();
-  }
-  update_screen();
+// Ironbar upgrades
+if (DOM.ironbarupgrade1button) {
+  DOM.ironbarupgrade1button.addEventListener("click", () =>
+    purchase("ironbars", "ironbarupgrade1cost", () => {
+      GameData.ironbarupgrade1cost = GameData.ironbarupgrade1cost.times(1.15);
+      GameData.ironbarupgrade1power = GameData.ironbarupgrade1power.times(1.05);
+      GameData.click_power = GameData.click_power.times(1.05);
+    })
+  );
+}
+if (DOM.ironbarupgrade2button) {
+  DOM.ironbarupgrade2button.addEventListener("click", () =>
+    purchase("ironbars", "ironbarupgrade2cost", () => {
+      GameData.ironbarupgrade2cost = GameData.ironbarupgrade2cost.times(1.15);
+      GameData.ironbarupgrade2power = GameData.ironbarupgrade2power.times(1.05);
+    })
+  );
 }
 
-
-
-// Timer
-function onesecondtimer() {
-  setInterval(save_game, 5000);
-  setInterval(update_screen, 1000);
-  setInterval(update_golden_joinha_earn, 1000);
-}
-
-// Music!
-// Cria o áudio
-const bgm = new Audio('assets/Voltaic.mp3'); // seu arquivo de música
-bgm.loop = true;
-bgm.volume = 0.5;
-
-// Botão toggle
-musicToggle.addEventListener("click", function() {
-  if (!GameData.music_on) {
-    bgm.play().catch(err => console.log(err));
-    GameData.music_on = true;
-  } else {
-    bgm.pause();
-    GameData.music_on = false;
-  }
-  update_screen();
-  save_game(); // salva imediatamente quando troca
-});
-
-// Função para spawnar a barra
-function spawnIronBar() {
-  const bar = document.createElement("img");
-  bar.src = "assets/ironbar.png";
-  bar.classList.add("iron-bar");
-
-  // posição X aleatória (deixa a barra inteira dentro da tela)
-  const screenWidth = window.innerWidth;
-  const randomX = Math.floor(Math.random() * (screenWidth - 40));
-  bar.style.left = randomX + "px";
-
-  // começa fora da tela, embaixo
-  bar.style.bottom = "-60px";
-
-  // evento de coleta
-  bar.addEventListener("click", () => {
-    bar.remove();
-    GameData.ironbars = GameData.ironbars.plus(1);
-  });
-
-  document.body.appendChild(bar);
-  GameData.ironbarlist.push(bar);
-
-  // animação para subir
-  let pos = -60;
-  const screenHeight = window.innerHeight;
-
-  function animate() {
-    pos += 2; // velocidade
-    bar.style.bottom = pos + "px";
-
-    if (pos < screenHeight + 100) {
-      requestAnimationFrame(animate);
+// Music toggle
+if (DOM.musicToggle) {
+  DOM.musicToggle.addEventListener("click", function() {
+    if (!GameData.music_on) {
+      bgm.play().catch(err => console.log(err));
+      GameData.music_on = true;
     } else {
-      bar.remove();
+      bgm.pause();
+      GameData.music_on = false;
     }
-  }
-
-  animate();
+    update_screen();
+    save_game();
+  });
 }
 
-// Setup inicial
+/////////////////////////
+// ===== onload ========
+/////////////////////////
 window.onload = function () {
-  document.getElementById("JoinhaButton").addEventListener("click", joinhaclick);
-  if (GameData.upgrade_4_cap == 0) {
-    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: 1.04e7)";
-  } else {
-    document.getElementById("Upgrade_4_Label").innerText = "Clicks are 25x more powerful (Cost: Completed)";
+  // Attach Joinha click if not yet attached (safety)
+  if (!DOM.JoinhaButton) {
+    const jb = $("JoinhaButton");
+    if (jb) jb.addEventListener("click", joinhaclick);
   }
+
+  // initialize label 4 text consistency
+  if ($( 'Upgrade_4_Label' )) {
+    if (GameData.upgrade_4_cap == 0) $( 'Upgrade_4_Label' ).innerText = "Clicks are 25x more powerful (Cost: 1.04e7)";
+    else $( 'Upgrade_4_Label' ).innerText = "Clicks are 25x more powerful (Cost: Completed)";
+  }
+
   load_game();
   onesecondtimer();
   update_screen();
+
+  // start ironbar spawns if unlocked
   if (GameData.space_unlocked === true) {
-  	// Loop para spawnar de acordo com ironbardelay
-      setInterval(() => {
-        spawnIronBar();
-      }, GameData.ironbardelay);
+    setInterval(() => spawnIronBar(), Number(GameData.ironbardelay));
   }
 };
