@@ -6,54 +6,57 @@
 // ===== GameData ===
 //////////////////////
 window.GameData = {
-  joinhas: new Decimal(0),
-  golden_joinhas: new Decimal(0),
-  boostpergoldenjoinha: new Decimal(0.01),
-  magnets: new Decimal(0),
-  magnetschance: new Decimal(0.005),
-  click_power: new Decimal(1),
-  upgrade_1_cost: new Decimal(10),
-  joinhas_per_second: new Decimal(0),
-  upgrade_2_cost: new Decimal(25),
-  upgrade_3_cost: new Decimal(10),
-  upgrade_4_cap: 0,
-  upgrade_4_power: new Decimal(1),
-  upgrade_5_cost: new Decimal(1000),
-  upgrade_5_power: new Decimal(0),
-  upgrade_5_limit: new Decimal(0),
-  golden_joinha_earn: new Decimal(0),
-  golden_joinha_price: new Decimal(1000),
-  golden_upgrade_1_cost: new Decimal(100),
-  golden_upgrade_1_power: new Decimal(1),
-  golden_upgrade_2_cost: new Decimal(100),
-  golden_upgrade_2_power: new Decimal(1),
-  golden_upgrade_3_cost: new Decimal(1000000),
-  golden_upgrade_3_power: new Decimal(0),
-  great_reset_cost: new Decimal(100000),
-  great_reset_power: new Decimal(1),
-  magnet_upgrade_1_cost: new Decimal(10),
-  magnet_upgrade_1_power: new Decimal(1),
-  magnet_upgrade_2_cost: new Decimal(15),
-  magnet_upgrade_2_power: new Decimal(1),
-  magnet_upgrade_3_cost: new Decimal(25),
-  magnet_upgrade_3_limit: new Decimal(0),
-  magnet_upgrade_4_cost: new Decimal(10),
-  magnet_upgrade_4_power: new Decimal(1),
-  magnet_upgrade_5_cost: new Decimal(15),
-  magnet_upgrade_5_power: new Decimal(1),
-  earth_upgrade_cost: new Decimal(1000),
-  ironbars: new Decimal(0),
-  ironbardelay: new Decimal(60000),
-  ironbarlist: [],
-  ironbarupgrade1cost: new Decimal(10),
-  ironbarupgrade1power: new Decimal(1),
-  ironbarupgrade2cost: new Decimal(15),
-  ironbarupgrade2power: new Decimal(1),
-  ironbarupgrade3cost: new Decimal(10),
-  ironbarupgrade3power: new Decimal(1),
-  ironbarupgrade4cost: new Decimal(5),
-  space_unlocked: false,
-  music_on: false
+    joinhas: new Decimal(0),
+    golden_joinhas: new Decimal(0),
+    boostpergoldenjoinha: new Decimal(0.01),
+    magnets: new Decimal(0),
+    magnetschance: new Decimal(0.005),
+    click_power: new Decimal(1),
+    upgrade_1_cost: new Decimal(10),
+    joinhas_per_second: new Decimal(0),
+    upgrade_2_cost: new Decimal(25),
+    upgrade_3_cost: new Decimal(10),
+    upgrade_4_cap: 0,
+    upgrade_4_power: new Decimal(1),
+    upgrade_5_cost: new Decimal(1000),
+    upgrade_5_power: new Decimal(0),
+    upgrade_5_limit: new Decimal(0),
+    golden_joinha_earn: new Decimal(0),
+    golden_joinha_price: new Decimal(1000),
+    golden_upgrade_1_cost: new Decimal(100),
+    golden_upgrade_1_power: new Decimal(1),
+    golden_upgrade_2_cost: new Decimal(100),
+    golden_upgrade_2_power: new Decimal(1),
+    golden_upgrade_3_cost: new Decimal(1000000),
+    golden_upgrade_3_power: new Decimal(0),
+    great_reset_cost: new Decimal(100000),
+    great_reset_power: new Decimal(1),
+    magnet_upgrade_1_cost: new Decimal(10),
+    magnet_upgrade_1_power: new Decimal(1),
+    magnet_upgrade_2_cost: new Decimal(15),
+    magnet_upgrade_2_power: new Decimal(1),
+    magnet_upgrade_3_cost: new Decimal(25),
+    magnet_upgrade_3_limit: new Decimal(0),
+    magnet_upgrade_4_cost: new Decimal(10),
+    magnet_upgrade_4_power: new Decimal(1),
+    magnet_upgrade_5_cost: new Decimal(15),
+    magnet_upgrade_5_power: new Decimal(1),
+    earth_upgrade_cost: new Decimal(1000),
+    ironbars: new Decimal(0),
+    ironbardelay: new Decimal(60000),
+    ironbarlist: [],
+    ironbarupgrade1cost: new Decimal(10),
+    ironbarupgrade1power: new Decimal(1),
+    ironbarupgrade2cost: new Decimal(15),
+    ironbarupgrade2power: new Decimal(1),
+    ironbarupgrade3cost: new Decimal(10),
+    ironbarupgrade3power: new Decimal(1),
+    ironbarupgrade4cost: new Decimal(5),
+    bricks: new Decimal(0),
+    bricks_per_second: new Decimal(1),
+    bricks_per_second_timer: new Decimal(60000),
+    space_unlocked: false,
+    music_on: false
 };
 
 //////////////////////
@@ -72,10 +75,17 @@ function shortDecimal(num) {
 
 let ironBarInterval = null;
 function setIronBarSpawner() {
-  if (ironBarInterval) {
-  clearInterval(ironBarInterval);
+    if (ironBarInterval) {
+      clearInterval(ironBarInterval);
   }
   ironBarInterval = setInterval(spawnIronBar, Number(GameData.ironbardelay));
+}
+let brickdoubletimer = null;
+function setBrickDoubleTimer() {
+    if (brickdoubletimer) {
+	clearInterval(brickdoubletimer);
+    }
+    brickdoubletimer = setInterval(doubleBrickProduction, Number(GameData.bricks_per_second_timer));
 }
 
 function showConfirm(message, callback) {
@@ -165,35 +175,65 @@ function update_golden_joinha_earn() {
 //////////////////////
 const labelFns = {
   JoinhaLabel: () => "Joinhas: " + shortDecimal(GameData.joinhas),
+
   Upgrade_1_Label: () => "Clicks give +1 Joinhas (Cost: " + shortDecimal(GameData.upgrade_1_cost) + " Joinhas)",
+
   Upgrade_2_Label: () => "+1 Joinhas per second (Cost: " + shortDecimal(GameData.upgrade_2_cost) + " Joinhas)",
+
   joinhas_per_second_label: () => "Joinhas per second: " + shortDecimal(GameData.joinhas_per_second),
+
   Upgrade_3_Label: () => "Upgrades 1 and 2 at 1/4 of their prices (Cost: " + shortDecimal(GameData.upgrade_3_cost) + " Joinhas)",
+
   Upgrade_4_Label: () => GameData.upgrade_4_cap == 0 ? "Clicks are 25x more powerful (Cost: 1.04e7)" : "Clicks are 25x more powerful (Cost: Completed)",
+
   Upgrade_5_Label: () => {
     if (GameData.upgrade_5_limit.lt(20))
       return "+0.1% Chance of a Magnet per click\n(Cost: " + shortDecimal(GameData.upgrade_5_cost) + " Joinhas) (" + GameData.upgrade_5_limit + " / 20)";
     return "+0.1% Chance of a Magnet per click\n(Cost: Completed) (" + GameData.upgrade_5_limit + " / 20)";
   },
+
   GoldenJoinhaLabel: () => "Golden Joinhas: " + shortDecimal(GameData.golden_joinhas) + "\nBoost per Golden Joinha: " + shortDecimal(GameData.boostpergoldenjoinha.times(100)) + "%",
+
   GoldenUpgrade1Label: () => "x2 Golden Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_1_cost) + " Golden Joinhas)",
+
   GoldenUpgrade2Label: () => "x2 Joinhas\n(Cost: " + shortDecimal(GameData.golden_upgrade_2_cost) + " Golden Joinhas)",
+
   GreatResetLabel: () => GameData.great_reset_cost.lt(1e35) ? "Resets everything but Golden Joinhas are 15x\neasier (Cost: " + shortDecimal(GameData.great_reset_cost) + " Golden Joinhas)" : "Resets everything but Golden Joinhas are 15x\neasier (Cost: Complete)",
+
   GoldenUpgrade3Label: () => "Get +1 Magnet per Magnet\n(Cost: " + shortDecimal(GameData.golden_upgrade_3_cost) + " Golden Joinhas)",
+
   UnlockSpaceLabel: () => GameData.space_unlocked === false ? "Unlocks Space\n(Cost: 1e35)" : "Unlocks Space\n(Cost: Unlocked)",
+
   MagnetsLabel: () => "Magnets: " + shortDecimal(GameData.magnets),
+
   MagnetUpgrade1Label: () => "Get 1.5x more Joinhas\n(Cost: "  + shortDecimal(GameData.magnet_upgrade_1_cost) + " Magnets)",
+
   MagnetUpgrade2Label: () => "Get 1.5x more Golden Joinhas\n(Cost: " + shortDecimal(GameData.magnet_upgrade_2_cost) + " Magnets)",
+
   MagnetUpgrade3Label: () => GameData.magnet_upgrade_3_limit.lt(4) ? "Get Magnets 2x easier\n(Cost: " + shortDecimal(GameData.magnet_upgrade_3_cost) + " Magnets)\n(" + GameData.magnet_upgrade_3_limit + " / 4)" : "Get Magnets 2x easier\n(Cost: Completed)\n(" + GameData.magnet_upgrade_3_limit + " / 4)",
+
   MagnetUpgrade4Label: () => "Get more Joinhas per second\n(Cost: " + shortDecimal(GameData.magnet_upgrade_4_cost) + " Magnets)",
+
   MagnetUpgrade5Label: () => "Earn passive Golden Joinhas:\n+" + shortDecimal(GameData.magnet_upgrade_5_power.minus(1)) + " → +" + shortDecimal((GameData.magnet_upgrade_5_power.times(1.5)).minus(1)) + "\n(Cost: " + shortDecimal(GameData.magnet_upgrade_5_cost) + " Magnets)",
+
   EarthLabel: () => "Get more boost per Golden Joinhas:\n" + shortDecimal(GameData.boostpergoldenjoinha.times(100)) + "% → " + shortDecimal((GameData.boostpergoldenjoinha.plus(0.01)).times(100)) + "%\n(Cost: " + shortDecimal(GameData.earth_upgrade_cost) + " Magnets)",
+
   IronBarLabel: () => "Iron Bars: " + shortDecimal(GameData.ironbars),
+
   IronBarTimeLabel: () => "An Iron Bar spawns every: " + shortDecimal(GameData.ironbardelay.div(1000)) + " Seconds",
+
   IronBarUpgrade1Label: () => "Get more Joinhas:\n" + shortDecimal(GameData.ironbarupgrade1power) + "x → " + shortDecimal(GameData.ironbarupgrade1power.times(new Decimal(1.15))) + "x\n(Cost: " + shortDecimal(GameData.ironbarupgrade1cost) + " Iron Bars)",
+
   IronBarUpgrade2Label: () => "Get more Magnets:\n" + shortDecimal(GameData.ironbarupgrade2power) + "x → " + shortDecimal(GameData.ironbarupgrade2power.times(new Decimal(1.15))) + "x\n(Cost: " + shortDecimal(GameData.ironbarupgrade2cost) + " Iron Bars)",
+
   IronBarUpgrade3Label: () => "Get more Iron Bars:\n+" + shortDecimal(GameData.ironbarupgrade3power) + " → +" + shortDecimal(GameData.ironbarupgrade3power.plus(new Decimal(1))) + "\n(Cost: " + shortDecimal(GameData.ironbarupgrade3cost) + " Iron Bars)",
-  IronBarUpgrade4Label: () => "Iron Bars spawn more often:\n" + shortDecimal(GameData.ironbardelay.div(1000)) + "s → " + shortDecimal((GameData.ironbardelay.div(1000)).minus(1)) + "\n(Cost: " + shortDecimal(GameData.ironbarupgrade4cost) + " Iron Bars)",
+
+    IronBarUpgrade4Label: () => "Iron Bars spawn more often:\n" + shortDecimal(GameData.ironbardelay.div(1000)) + "s → " + shortDecimal((GameData.ironbardelay.div(1000)).minus(1)) + "\n(Cost: " + shortDecimal(GameData.ironbarupgrade4cost) + " Iron Bars)",
+
+    BrickLabel: () => "Bricks: " + shortDecimal(GameData.bricks),
+
+    BricksPerSecondLabel: () => "Bricks Per Second: " + shortDecimal(GameData.bricks_per_second) + "/s | x2 → " + shortDecimal(GameData.bricks_per_second.times(2)) + "/s",
+
   MusicLabel: () => GameData.music_on ? "🎵 Music ON" : "🎵 Music OFF"
 };
 
@@ -203,6 +243,7 @@ function update_screen() {
     if (!el) continue;
     el.innerText = labelFns[id]();
   }
+    GameData.bricks = GameData.bricks.plus(GameData.bricks_per_second);
   // increment joinhas passively
   GameData.joinhas = GameData.joinhas.plus(GameData.joinhas_per_second);
   // Show/hide space button if necessary
@@ -247,10 +288,10 @@ function load_game() {
 // ===== Timers =====
 //////////////////////
 function onesecondtimer() {
-  setInterval(save_game, 5000);
-  setInterval(update_screen, 1000);
-  setInterval(passiveGoldenJoinhas, 1000)
-  setInterval(update_golden_joinha_earn, 1000);
+    setInterval(save_game, 5000);
+    setInterval(update_screen, 1000);
+    setInterval(passiveGoldenJoinhas, 1000);
+    setInterval(update_golden_joinha_earn, 1000);
 }
 
 //////////////////////
@@ -296,56 +337,62 @@ function spawnIronBar() {
   animate();
 }
 
+function doubleBrickProduction() {
+    GameData.bricks_per_second = GameData.bricks_per_second.times(2);
+}
 //////////////////////////////
 // ===== DOM bindings =======
 //////////////////////////////
 const DOM = {
-  // Menus & Buttons
-  upgradesMenuButton: $("UpgradesMenuButton"),
-  upgradesMenu: $("UpgradesMenu"),
-  upgradesMenuCloseButton: $("CloseUpgradesButton"),
-  spacebutton: $("SpaceButton"),
-  spacemenu: $("SpaceMenu"),
-  earthbutton: $("EarthButton"),
-  ironbarmenubutton: $("IronBarMenuButton"),
-  ironbarmenu: $("IronBarMenu"),
-  ironbarupgrade1button: $("IronBarUpgrade1Button"),
-  ironbarupgrade2button: $("IronBarUpgrade2Button"),
-  ironbarupgrade3button: $("IronBarUpgrade3Button"),
-  ironbarupgrade4button: $("IronBarUpgrade4Button"),
-  closeironbarmenu: $("CloseIronBarMenu"),
-  spacebackbutton: $("SpaceBackButton"),
-  upgrade_1_button: $("Upgrade_1_Button"),
-  upgrade_2_button: $("Upgrade_2_Button"),
-  upgrade_3_button: $("Upgrade_3_Button"),
-  upgrade_4_button: $("Upgrade_4_Button"),
-  upgrade_5_button: $("Upgrade_5_Button"),
-  prestigemenubutton: $("PrestigeMenuButton"),
-  prestigemenu: $("PrestigeMenu"),
-  closeprestigemenubutton: $("ClosePrestigeMenu"),
-  prestigebutton: $("PrestigeButton"),
-  goldenupgrade1button: $("GoldenUpgrade1Button"),
-  goldenupgrade2button: $("GoldenUpgrade2Button"),
-  nextpageprestigemenu1: $("NextPagePrestigeMenu1"),
-  nextpageprestige1button: $("NextPagePrestige1Button"),
-  goldenupgrade3button: $("GoldenUpgrade3Button"),
-  unlockspacebutton: $("UnlockSpaceButton"),
-  prestigepreviouspage1button: $("PrestigePreviousPage1Button"),
-  settingsmenubutton: $("SettingsMenuButton"),
-  settingsmenu: $("SettingsMenu"),
-  closesettingsmenubutton: $("CloseSettingsMenu"),
-  hardresetbutton: $("HardResetButton"),
-  greatresetbutton: $("GreatResetButton"),
-  musicToggle: $("musicToggle"),
-  magnetsupgradesmenu: $("MagnetsUpgradesMenu"),
-  magnetsupgradesbutton: $("MagnetsUpgradesButton"),
-  closemagnetsmenu: $("CloseMagnetsMenu"),
-  magnetupgrade1button: $("MagnetUpgrade1Button"),
-  magnetupgrade2button: $("MagnetUpgrade2Button"),
-  magnetupgrade3button: $("MagnetUpgrade3Button"),
-  magnetupgrade4button: $("MagnetUpgrade4Button"),
-  magnetupgrade5button: $("MagnetUpgrade5Button"),
-  JoinhaButton: $("JoinhaButton")
+    // Menus & Buttons
+    upgradesMenuButton: $("UpgradesMenuButton"),
+    upgradesMenu: $("UpgradesMenu"),
+    upgradesMenuCloseButton: $("CloseUpgradesButton"),
+    spacebutton: $("SpaceButton"),
+    spacemenu: $("SpaceMenu"),
+    earthbutton: $("EarthButton"),
+    ironbarmenubutton: $("IronBarMenuButton"),
+    ironbarmenu: $("IronBarMenu"),
+    ironbarupgrade1button: $("IronBarUpgrade1Button"),
+    ironbarupgrade2button: $("IronBarUpgrade2Button"),
+    ironbarupgrade3button: $("IronBarUpgrade3Button"),
+    ironbarupgrade4button: $("IronBarUpgrade4Button"),
+    closeironbarmenu: $("CloseIronBarMenu"),
+    brickmenubutton: $("BrickMenuButton"),
+    brickmenu: $("BrickMenu"),
+    closebrickmenu: $("CloseBrickMenu"),
+    spacebackbutton: $("SpaceBackButton"),
+    upgrade_1_button: $("Upgrade_1_Button"),
+    upgrade_2_button: $("Upgrade_2_Button"),
+    upgrade_3_button: $("Upgrade_3_Button"),
+    upgrade_4_button: $("Upgrade_4_Button"),
+    upgrade_5_button: $("Upgrade_5_Button"),
+    prestigemenubutton: $("PrestigeMenuButton"),
+    prestigemenu: $("PrestigeMenu"),
+    closeprestigemenubutton: $("ClosePrestigeMenu"),
+    prestigebutton: $("PrestigeButton"),
+    goldenupgrade1button: $("GoldenUpgrade1Button"),
+    goldenupgrade2button: $("GoldenUpgrade2Button"),
+    nextpageprestigemenu1: $("NextPagePrestigeMenu1"),
+    nextpageprestige1button: $("NextPagePrestige1Button"),
+    goldenupgrade3button: $("GoldenUpgrade3Button"),
+    unlockspacebutton: $("UnlockSpaceButton"),
+    prestigepreviouspage1button: $("PrestigePreviousPage1Button"),
+    settingsmenubutton: $("SettingsMenuButton"),
+    settingsmenu: $("SettingsMenu"),
+    closesettingsmenubutton: $("CloseSettingsMenu"),
+    hardresetbutton: $("HardResetButton"),
+    greatresetbutton: $("GreatResetButton"),
+    musicToggle: $("musicToggle"),
+    magnetsupgradesmenu: $("MagnetsUpgradesMenu"),
+    magnetsupgradesbutton: $("MagnetsUpgradesButton"),
+    closemagnetsmenu: $("CloseMagnetsMenu"),
+    magnetupgrade1button: $("MagnetUpgrade1Button"),
+    magnetupgrade2button: $("MagnetUpgrade2Button"),
+    magnetupgrade3button: $("MagnetUpgrade3Button"),
+    magnetupgrade4button: $("MagnetUpgrade4Button"),
+    magnetupgrade5button: $("MagnetUpgrade5Button"),
+    JoinhaButton: $("JoinhaButton")
 };
 
 //////////////////////////////
@@ -380,6 +427,12 @@ if (DOM.magnetsupgradesbutton && DOM.closemagnetsmenu) {
 if (DOM.ironbarmenubutton && DOM.closeironbarmenu) {
   DOM.ironbarmenubutton.addEventListener('click', () => toggleMenu(DOM.ironbarmenu, true));
   DOM.closeironbarmenu.addEventListener('click', () => toggleMenu(DOM.ironbarmenu, false));
+}
+
+// Brick Menu
+if (DOM.brickmenubutton && DOM.closebrickmenu) {
+    DOM.brickmenubutton.addEventListener('click', () => toggleMenu(DOM.brickmenu, true));
+    DOM.closebrickmenu.addEventListener('click', () => toggleMenu(DOM.brickmenu, false));
 }
 
 // Joinha click
@@ -711,6 +764,7 @@ if (DOM.musicToggle) {
 // ===== onload ========
 /////////////////////////
 window.onload = function () {
+	clearInterval(ironBarInterval)
   // Attach Joinha click if not yet attached (safety)
   if (!DOM.JoinhaButton) {
     const jb = $("JoinhaButton");
@@ -723,12 +777,17 @@ window.onload = function () {
     else $( 'Upgrade_4_Label' ).innerText = "Clicks are 25x more powerful (Cost: Completed)";
   }
 
-  load_game();
-  onesecondtimer();
-  update_screen();
+    load_game();
+    onesecondtimer();
+    update_screen();
+    setBrickDoubleTimer();
 
   // start ironbar spawns if unlocked
-  if (GameData.space_unlocked === true) {
-    setIronBarSpawner();
-  }
+    if (GameData.space_unlocked === true) {
+	if (ironBarInterval) {
+	    clearInterval(ironBarInterval);
+	    setIronBarSpawner();
+	}
+	setIronBarSpawner();
+    }
 };
