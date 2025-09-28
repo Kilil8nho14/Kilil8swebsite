@@ -860,7 +860,7 @@ body {
 }
 /* IronBar Upgrades */
 #IronBarUpgrade1Button {
-	cursor: pointer;
+    cursor: pointer;
     width: 60px;
     height: 60px;
     background-image: url('assets/arrow.png');
@@ -874,7 +874,7 @@ body {
     left: 10px;
 }
 #IronBarUpgrade1Label {
-	font-size: 15px;
+    font-size: 15px;
     position: absolute;
     color: white;
     top: 165px;
@@ -882,7 +882,7 @@ body {
 }
 
 #IronBarUpgrade2Button {
-	cursor: pointer;
+    cursor: pointer;
     width: 60px;
     height: 60px;
     background-image: url('assets/arrow.png');
@@ -896,7 +896,7 @@ body {
     left: 10px;
 }
 #IronBarUpgrade2Label {
-	font-size: 15px;
+    font-size: 15px;
     position: absolute;
     color: white;
     top: 245px;
@@ -904,7 +904,7 @@ body {
 }
 
 #IronBarUpgrade3Button {
-	cursor: pointer;
+    cursor: pointer;
     width: 60px;
     height: 60px;
     background-image: url('assets/arrow.png');
@@ -918,7 +918,7 @@ body {
     left: 10px;
 }
 #IronBarUpgrade3Label {
-	font-size: 15px;
+    font-size: 15px;
     position: absolute;
     color: white;
     top: 325px;
@@ -926,7 +926,7 @@ body {
 }
 
 #IronBarUpgrade4Button {
-	cursor: pointer;
+    cursor: pointer;
     width: 60px;
     height: 60px;
     background-image: url('assets/arrow.png');
@@ -940,9 +940,67 @@ body {
     left: 10px;
 }
 #IronBarUpgrade4Label {
-	font-size: 15px;
+    font-size: 15px;
     position: absolute;
     color: white;
     top: 405px;
     left: 75px;
+}
+
+/* Brick Menu */
+#BrickMenuButton {
+    cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/brick.png');
+    background-size: cover;
+    background-position: center;
+    background-color: #00D7FF;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 145px;
+    right: 70px;
+}
+#BrickMenu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #BF7163;
+    padding: 40px 30px;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    z-index: 1000;
+}
+#BrickLabel {
+    font-size: 25px;
+    position: absolute;
+    color: white;
+    top: 70px;
+    left: 110px;
+}
+#BricksPerSecondLabel {
+    font-size: 10px;
+    position: absolute;
+    color: white;
+    top: 10px;
+    left: 110px;
+}
+#CloseBrickMenu {
+    cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+    transform: rotate(-90deg);
+
+    position: absolute;
+    top: 10px;
+    left: 10px;
 }
