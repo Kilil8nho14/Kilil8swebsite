@@ -39,6 +39,8 @@ window.GameData = {
   magnet_upgrade_3_limit: new Decimal(0),
   magnet_upgrade_4_cost: new Decimal(10),
   magnet_upgrade_4_power: new Decimal(1),
+  magnet_upgrade_5_cost: new Decimal(15),
+  magnet_upgrade_5_power: new Decimal(1),
   earth_upgrade_cost: new Decimal(1000),
   ironbars: new Decimal(0),
   ironbardelay: new Decimal(60000),
@@ -126,6 +128,13 @@ function purchase(resourceKey, costKey, effectFn) {
   }
 }
 
+///////////////////////////////
+// ===== Passive Golden Joinhas ==
+///////////////////////////////
+function passiveGoldenJoinhas() {
+	GameData.golden_joinhas = GameData.golden_joinhas.plus((GameData.magnet_upgrade_5_power.minus(1)))
+}
+
 //////////////////////////////
 // ===== Update golden earn ==
 //////////////////////////////
@@ -177,6 +186,7 @@ const labelFns = {
   MagnetUpgrade2Label: () => "Get 1.5x more Golden Joinhas\n(Cost: " + shortDecimal(GameData.magnet_upgrade_2_cost) + " Magnets)",
   MagnetUpgrade3Label: () => GameData.magnet_upgrade_3_limit.lt(4) ? "Get Magnets 2x easier\n(Cost: " + shortDecimal(GameData.magnet_upgrade_3_cost) + " Magnets)\n(" + GameData.magnet_upgrade_3_limit + " / 4)" : "Get Magnets 2x easier\n(Cost: Completed)\n(" + GameData.magnet_upgrade_3_limit + " / 4)",
   MagnetUpgrade4Label: () => "Get more Joinhas per second\n(Cost: " + shortDecimal(GameData.magnet_upgrade_4_cost) + " Magnets)",
+  MagnetUpgrade5Label: () => "Earn passive Golden Joinhas:\n+" + shortDecimal(GameData.magnet_upgrade_5_power.minus(1)) + " → +" + shortDecimal((GameData.magnet_upgrade_5_power.times(1.5)).minus(1)) + "\n(Cost: " + shortDecimal(GameData.magnet_upgrade_5_cost) + " Magnets)",
   EarthLabel: () => "Get more boost per Golden Joinhas:\n" + shortDecimal(GameData.boostpergoldenjoinha.times(100)) + "% → " + shortDecimal((GameData.boostpergoldenjoinha.plus(0.01)).times(100)) + "%\n(Cost: " + shortDecimal(GameData.earth_upgrade_cost) + " Magnets)",
   IronBarLabel: () => "Iron Bars: " + shortDecimal(GameData.ironbars),
   IronBarTimeLabel: () => "An Iron Bar spawns every: " + shortDecimal(GameData.ironbardelay.div(1000)) + " Seconds",
@@ -239,6 +249,7 @@ function load_game() {
 function onesecondtimer() {
   setInterval(save_game, 5000);
   setInterval(update_screen, 1000);
+  setInterval(passiveGoldenJoinhas, 1000)
   setInterval(update_golden_joinha_earn, 1000);
 }
 
@@ -333,6 +344,7 @@ const DOM = {
   magnetupgrade2button: $("MagnetUpgrade2Button"),
   magnetupgrade3button: $("MagnetUpgrade3Button"),
   magnetupgrade4button: $("MagnetUpgrade4Button"),
+  magnetupgrade5button: $("MagnetUpgrade5Button"),
   JoinhaButton: $("JoinhaButton")
 };
 
@@ -610,6 +622,14 @@ if (DOM.magnetupgrade4button) {
       GameData.joinhas_per_second = GameData.joinhas_per_second.times(2);
     })
   );
+}
+if (DOM.magnetupgrade5button) {
+	DOM.magnetupgrade5button.addEventListener("click", () =>
+		purchase("magnets", "magnet_upgrade_5_cost", () => {
+			GameData.magnet_upgrade_5_cost = GameData.magnet_upgrade_5_cost.times(1.5);
+			GameData.magnet_upgrade_5_power = GameData.magnet_upgrade_5_power.times(1.5);
+		})
+	);
 }
 
 // Hard Reset
