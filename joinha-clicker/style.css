@@ -989,6 +989,69 @@ body {
     top: 10px;
     left: 110px;
 }
+#BrickUpgrade1Button {
+    cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 175px;
+    left: 10px;
+}
+#BrickUpgrade1Label {
+    font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 165px;
+    left: 75px;
+}
+#BrickUpgrade2Button {
+    cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 245px;
+    left: 10px;
+}
+#BrickUpgrade2Label {
+    font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 235px;
+    left: 75px;
+}
+#BrickUpgrade3Button {
+    cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 315px;
+    left: 10px;
+}
+#BrickUpgrade3Label {
+    font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 305px;
+    left: 75px;
+}
 #CloseBrickMenu {
     cursor: pointer;
     width: 60px;
