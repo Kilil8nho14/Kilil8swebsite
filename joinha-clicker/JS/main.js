@@ -661,7 +661,6 @@ if (DOM.prestigebutton) {
 if (DOM.magnetupgrade1button) {
   DOM.magnetupgrade1button.addEventListener("click", () =>
     purchase("magnets", "magnet_upgrade_1_cost", () => {
-      GameData.magnets = GameData.magnets.minus(GameData.magnet_upgrade_1_cost); // purchase() already did minus, but keep safe
       GameData.magnet_upgrade_1_power = GameData.magnet_upgrade_1_power.times(1.5);
       GameData.magnet_upgrade_1_cost = GameData.magnet_upgrade_1_cost.times(1.35);
     })
