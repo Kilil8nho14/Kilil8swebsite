@@ -55,6 +55,12 @@ window.GameData = {
     bricks: new Decimal(0),
     bricks_per_second: new Decimal(1),
     bricks_per_second_timer: new Decimal(60000),
+    brick_upgrade_1_cost: new Decimal(100),
+    brick_upgrade_1_power: new Decimal(1),
+    brick_upgrade_2_cost: new Decimal(200),
+    brick_upgrade_2_power: new Decimal(1),
+    brick_upgrade_3_cost: new Decimal(400),
+    brick_upgrade_3_power: new Decimal(1),
     space_unlocked: false,
     music_on: false
 };
@@ -119,8 +125,9 @@ function joinhaclick() {
   if (MC.lte(GameData.magnetschance.plus(GameData.upgrade_5_power))) {
     // Mantive a lógica original (pode parecer que reseta, mas era assim no JS original)
     GameData.magnets = (GameData.magnets
-      .plus(GameData.golden_upgrade_3_power.plus(1)))
-      .times(GameData.ironbarupgrade2power);
+	  .plus(GameData.golden_upgrade_3_power.plus(1)))
+	  .times(GameData.ironbarupgrade2power)
+          .times(GameData.brick_upgrade_2_power);
   }
   update_golden_joinha_earn();
   update_screen();
@@ -233,6 +240,12 @@ const labelFns = {
     BrickLabel: () => "Bricks: " + shortDecimal(GameData.bricks),
 
     BricksPerSecondLabel: () => "Bricks Per Second: " + shortDecimal(GameData.bricks_per_second) + "/s | x2 → " + shortDecimal(GameData.bricks_per_second.times(2)) + "/s",
+
+    BrickUpgrade1Label: () => "Get More Joinhas:\n" + shortDecimal(GameData.brick_upgrade_1_power) + "x → " + shortDecimal(GameData.brick_upgrade_1_power.times(1.05)) + "x\n(Cost: " + shortDecimal(GameData.brick_upgrade_1_cost) + " Bricks)",
+
+    BrickUpgrade2Label: () => "Get More Magnets:\n" + shortDecimal(GameData.brick_upgrade_2_power) + "x → " + shortDecimal(GameData.brick_upgrade_2_power.times(1.05)) + "x\n(Cost: " + shortDecimal(GameData.brick_upgrade_2_cost) + " Bricks)",
+
+    BrickUpgrade3Label: () => "Get More Bricks:\n" + shortDecimal(GameData.brick_upgrade_3_power) + "x → " + shortDecimal(GameData.brick_upgrade_3_power.times(4)) + "x\n(Cost: " + shortDecimal(GameData.brick_upgrade_3_cost) + " Bricks)",
 
   MusicLabel: () => GameData.music_on ? "🎵 Music ON" : "🎵 Music OFF"
 };
@@ -360,6 +373,9 @@ const DOM = {
     closeironbarmenu: $("CloseIronBarMenu"),
     brickmenubutton: $("BrickMenuButton"),
     brickmenu: $("BrickMenu"),
+    brickupgrade1button: $("BrickUpgrade1Button"),
+    brickupgrade2button: $("BrickUpgrade2Button"),
+    brickupgrade3button: $("BrickUpgrade3Button"),
     closebrickmenu: $("CloseBrickMenu"),
     spacebackbutton: $("SpaceBackButton"),
     upgrade_1_button: $("Upgrade_1_Button"),
@@ -445,10 +461,11 @@ if (DOM.upgrade_1_button) {
       GameData.click_power = GameData.click_power.plus(
         (new Decimal(1))
           .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
-          .times(GameData.golden_upgrade_2_power)
-          .times(GameData.upgrade_4_power)
-          .times(GameData.magnet_upgrade_1_power)
-          .times(GameData.ironbarupgrade1power)
+              .times(GameData.golden_upgrade_2_power)
+              .times(GameData.upgrade_4_power)
+              .times(GameData.magnet_upgrade_1_power)
+              .times(GameData.ironbarupgrade1power)
+	      .times(GameData.brick_upgrade_1_power)
       );
       GameData.upgrade_1_cost = GameData.upgrade_1_cost.times(1.6);
     })
@@ -462,10 +479,11 @@ if (DOM.upgrade_2_button) {
       GameData.joinhas_per_second = GameData.joinhas_per_second.plus(
         (new Decimal(1))
           .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
-          .times(GameData.golden_upgrade_2_power)
-          .times(GameData.magnet_upgrade_1_power)
-          .times(GameData.magnet_upgrade_4_power)
-          .times(GameData.ironbarupgrade1power)
+              .times(GameData.golden_upgrade_2_power)
+              .times(GameData.magnet_upgrade_1_power)
+              .times(GameData.magnet_upgrade_4_power)
+              .times(GameData.ironbarupgrade1power)
+	      .times(GameData.brick_upgrade_1_power)
       );
       GameData.upgrade_2_cost = GameData.upgrade_2_cost.times(1.5);
     })
@@ -494,9 +512,10 @@ if (DOM.upgrade_4_button) {
       GameData.click_power = GameData.click_power.times(
         GameData.upgrade_4_power
           .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
-          .times(GameData.golden_upgrade_2_power)
-          .times(GameData.magnet_upgrade_1_power)
-          .times(GameData.ironbarupgrade1power)
+              .times(GameData.golden_upgrade_2_power)
+              .times(GameData.magnet_upgrade_1_power)
+              .times(GameData.ironbarupgrade1power)
+	      .times(GameData.brick_upgrade_1_power)
       );
       update_screen();
     }
@@ -509,8 +528,7 @@ if (DOM.upgrade_5_button) {
     purchase("joinhas", "upgrade_5_cost", () => {
       if (GameData.upgrade_5_limit.lt(20)) {
         GameData.upgrade_5_power = GameData.upgrade_5_power.plus(0.001);
-        GameData.upgrade_5_limit = GameData.upgrade_5_limit.plus(1);
-        GameData.upgrade_5_cost = GameData.upgrade_5_cost.times(10);
+        GameData.upgrade_5_limit = GameData.upgrade_5_limit.plus(1);         GameData.upgrade_5_cost = GameData.upgrade_5_cost.times(10);
       }
     })
   );
@@ -526,7 +544,6 @@ if (DOM.goldenupgrade1button) {
     purchase("golden_joinhas", "golden_upgrade_1_cost", () => {
       GameData.golden_upgrade_1_cost = GameData.golden_upgrade_1_cost.times(10);
       GameData.golden_upgrade_1_power = GameData.golden_upgrade_1_power.times(2);
-      GameData.golden_joinha_earn = new Decimal(2);
     })
   );
 }
@@ -551,8 +568,9 @@ if (DOM.greatresetbutton) {
         GameData.joinhas = new Decimal(0);
         GameData.golden_joinhas = new Decimal(0);
         GameData.click_power = new Decimal(1)
-          .times(GameData.magnet_upgrade_1_power)
-          .times(GameData.ironbarupgrade1power);
+              .times(GameData.magnet_upgrade_1_power)
+              .times(GameData.ironbarupgrade1power)
+	      .times(GameData.brick_upgrade_1_power)
         GameData.upgrade_1_cost = new Decimal(10);
         GameData.joinhas_per_second = new Decimal(0);
         GameData.upgrade_2_cost = new Decimal(25);
@@ -618,9 +636,10 @@ if (DOM.prestigebutton) {
         GameData.joinhas = new Decimal(0);
         GameData.click_power = new Decimal(1)
           .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
-          .times(GameData.golden_upgrade_2_power)
-          .times(GameData.magnet_upgrade_1_power)
-          .times(GameData.ironbarupgrade1power);
+              .times(GameData.golden_upgrade_2_power)
+              .times(GameData.magnet_upgrade_1_power)
+              .times(GameData.ironbarupgrade1power)
+	      .times(GameData.brick_upgrade_1_power);
         GameData.joinhas_per_second = new Decimal(0);
         GameData.upgrade_1_cost = new Decimal(10);
         GameData.upgrade_2_cost = new Decimal(25);
@@ -745,6 +764,33 @@ if (DOM.ironbarupgrade4button) {
   });
 }
 
+// Brick Upgrades
+if (DOM.brickupgrade1button) {
+    DOM.brickupgrade1button.addEventListener("click", () => {
+	purchase("bricks", "brick_upgrade_1_cost", () => {
+	    GameData.brick_upgrade_1_cost = GameData.brick_upgrade_1_cost.times(3.14);
+	    GameData.brick_upgrade_1_power = GameData.brick_upgrade_1_power.times(1.5);
+	    GameData.click_power = GameData.click_power.times(1.5);
+	});
+    });
+};
+if (DOM.brickupgrade2button) {
+    DOM.brickupgrade2button.addEventListener("click", () => {
+	purchase("bricks", "brick_upgrade_2_cost", () => {
+	    GameData.brick_upgrade_2_cost = GameData.brick_upgrade_2_cost.times(4.14);
+	    GameData.brick_upgrade_2_power = GameData.brick_upgrade_2_power.times(1.05);
+	});
+    });
+};
+if (DOM.brickupgrade3button) {
+    DOM.brickupgrade3button.addEventListener("click", () => {
+	purchase("bricks", "brick_upgrade_3_cost", () => {
+	    GameData.brick_upgrade_3_cost = GameData.brick_upgrade_3_cost.times(40);
+	    GameData.brick_upgrade_3_power = GameData.brick_upgrade_3_power.times(4);
+	    GameData.bricks_per_second = GameData.bricks_per_second.times(4);
+	});
+    });
+};
 // Music toggle
 if (DOM.musicToggle) {
   DOM.musicToggle.addEventListener("click", function() {
