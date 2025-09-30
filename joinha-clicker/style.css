@@ -1052,6 +1052,26 @@ body {
     top: 305px;
     left: 75px;
 }
+#BrickUpgrade4Button {
+    cursor: pointer;                                                 width: 60px;
+    height: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 385px;
+    left: 10px;
+}
+#BrickUpgrade4Label {
+    font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 375px;
+    left: 75px;
+}
 #CloseBrickMenu {
     cursor: pointer;
     width: 60px;
