@@ -61,6 +61,8 @@ window.GameData = {
     brick_upgrade_2_power: new Decimal(1),
     brick_upgrade_3_cost: new Decimal(400),
     brick_upgrade_3_power: new Decimal(1),
+    brick_upgrade_4_cost: new Decimal(1000),
+    brick_upgrade_4_power: new Decimal(1),
     space_unlocked: false,
     music_on: false
 };
@@ -127,7 +129,7 @@ function joinhaclick() {
     GameData.magnets = (GameData.magnets
 	  .plus(GameData.golden_upgrade_3_power.plus(1)))
 	  .times(GameData.ironbarupgrade2power)
-          .times(GameData.brick_upgrade_2_power);
+      .times(GameData.brick_upgrade_2_power);
   }
   update_golden_joinha_earn();
   update_screen();
@@ -149,7 +151,8 @@ function purchase(resourceKey, costKey, effectFn) {
 // ===== Passive Golden Joinhas ==
 ///////////////////////////////
 function passiveGoldenJoinhas() {
-	GameData.golden_joinhas = GameData.golden_joinhas.plus((GameData.magnet_upgrade_5_power.minus(1)))
+	GameData.golden_joinhas = GameData.golden_joinhas.plus((GameData.magnet_upgrade_5_power.minus(1)));
+    GameData.magnets = GameData.magnets.plus(GameData.brick_upgrade_4_power.minus(1));
 }
 
 //////////////////////////////
@@ -241,11 +244,13 @@ const labelFns = {
 
     BricksPerSecondLabel: () => "Bricks Per Second: " + shortDecimal(GameData.bricks_per_second) + "/s | x2 → " + shortDecimal(GameData.bricks_per_second.times(2)) + "/s",
 
-    BrickUpgrade1Label: () => "Get More Joinhas:\n" + shortDecimal(GameData.brick_upgrade_1_power) + "x → " + shortDecimal(GameData.brick_upgrade_1_power.times(1.05)) + "x\n(Cost: " + shortDecimal(GameData.brick_upgrade_1_cost) + " Bricks)",
+    BrickUpgrade1Label: () => "Get More Joinhas:\n" + shortDecimal(GameData.brick_upgrade_1_power.minus(1)) + "x → " + shortDecimal(GameData.brick_upgrade_1_power.times(1.05)) + "x\n(Cost: " + shortDecimal(GameData.brick_upgrade_1_cost) + " Bricks)",
 
     BrickUpgrade2Label: () => "Get More Magnets:\n" + shortDecimal(GameData.brick_upgrade_2_power) + "x → " + shortDecimal(GameData.brick_upgrade_2_power.times(1.05)) + "x\n(Cost: " + shortDecimal(GameData.brick_upgrade_2_cost) + " Bricks)",
 
-    BrickUpgrade3Label: () => "Get More Bricks:\n" + shortDecimal(GameData.brick_upgrade_3_power) + "x → " + shortDecimal(GameData.brick_upgrade_3_power.times(4)) + "x\n(Cost: " + shortDecimal(GameData.brick_upgrade_3_cost) + " Bricks)",
+    BrickUpgrade3Label: () => "Get More Bricks:\n" + shortDecimal(GameData.brick_upgrade_3_power) + "x → " + shortDecimal(GameData.brick_upgrade_3_power.times(4).minus(1)) + "x\n(Cost: " + shortDecimal(GameData.brick_upgrade_3_cost) + " Bricks)",
+
+    BrickUpgrade4Label: () => "Get Magnets per second:\n" + shortDecimal(GameData.brick_upgrade_4_power.minus(1)) + "/s → " + shortDecimal(GameData.brick_upgrade_4_power.times(1.5).minus(1)) + "/s\n(Cost: " + shortDecimal(GameData.brick_upgrade_4_cost) + " Bricks)",
 
   MusicLabel: () => GameData.music_on ? "🎵 Music ON" : "🎵 Music OFF"
 };
@@ -328,7 +333,7 @@ function spawnIronBar() {
 
   bar.addEventListener("click", () => {
     if (bar.parentNode) bar.remove();
-    GameData.ironbars = GameData.ironbars.plus(1).times(GameData.ironbarupgrade3power);
+    GameData.ironbars = GameData.ironbars.plus(GameData.ironbarupgrade3power).plus(1);
     update_screen();
   });
 
@@ -376,6 +381,7 @@ const DOM = {
     brickupgrade1button: $("BrickUpgrade1Button"),
     brickupgrade2button: $("BrickUpgrade2Button"),
     brickupgrade3button: $("BrickUpgrade3Button"),
+    brickupgrade4button: $("BrickUpgrade4Button"),
     closebrickmenu: $("CloseBrickMenu"),
     spacebackbutton: $("SpaceBackButton"),
     upgrade_1_button: $("Upgrade_1_Button"),
@@ -790,6 +796,15 @@ if (DOM.brickupgrade3button) {
 	});
     });
 };
+if (DOM.brickupgrade4button) {
+    DOM.brickupgrade4button.addEventListener("click", () => {
+        purchase("bricks", "brick_upgrade_4_cost", () => {
+            GameData.brick_upgrade_4_cost = GameData.brick_upgrade_4_cost.times(3.14);
+            GameData.brick_upgrade_4_power = GameData.brick_upgrade_4_power.times(1.5);
+        });
+    });
+};
+
 // Music toggle
 if (DOM.musicToggle) {
   DOM.musicToggle.addEventListener("click", function() {
