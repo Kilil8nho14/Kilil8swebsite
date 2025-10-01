@@ -482,7 +482,12 @@ if (DOM.maxupgradesbutton) {
       GameData.joinhas = GameData.joinhas.minus(new Decimal(10480000));
       GameData.upgrade_4_cap = 1;
       GameData.upgrade_4_power = GameData.upgrade_4_power.times(25);
-      GameData.click_power = GameData.click_power.times(GameData.upgrade_4_power);
+      GameData.click_power = GameData.click_power.times(GameData.upgrade_4_power)
+      .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
+              .times(GameData.golden_upgrade_2_power)
+              .times(GameData.magnet_upgrade_1_power)
+              .times(GameData.ironbarupgrade1power)
+	      .times(GameData.brick_upgrade_1_power);
     }
 
     // Upgrade 5 (até limite 20)
