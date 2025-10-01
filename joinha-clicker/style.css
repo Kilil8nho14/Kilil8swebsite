@@ -79,7 +79,18 @@ body {
     top: 10px;
     left: 10px;
 }
-
+#MaxButtonUpgrades {
+    cursor: pointer;
+    width: 60px;
+    height: 60px;
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
 /* First upgrade button */
 #Upgrade_1_Button {
         cursor: pointer;
@@ -1070,6 +1081,27 @@ body {
     position: absolute;
     color: white;
     top: 375px;
+    left: 75px;
+}
+#BrickUpgrade5Button {
+    cursor: pointer;
+    height: 60px;
+    width: 60px;
+    background-image: url('assets/arrow.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 455px;
+    left: 10px;
+}
+#BrickUpgrade5Label {
+    font-size: 15px;
+    position: absolute;
+    color: white;
+    top: 445px;
     left: 75px;
 }
 #CloseBrickMenu {
