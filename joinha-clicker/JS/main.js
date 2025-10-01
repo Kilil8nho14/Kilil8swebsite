@@ -1,6 +1,15 @@
 // main_refactored_full.js
 // Versão refatorada que mantém todas as mecânicas do arquivo original,
 // mas com menos repetição e organização melhor.
+// Error catcher
+window.onerror = function(message, source, lineno, colno, error) {
+    console.error("Error Detected!");
+    console.error("Message:", message);
+    console.error("File:", source);
+    console.error("Line:", lineno);
+    console.error("Collum:", colno);
+    if (error && error.stack) console.error("Stack trace:", error.stack);
+};
 
 //////////////////////
 // ===== GameData ===
@@ -63,6 +72,7 @@ window.GameData = {
     brick_upgrade_3_power: new Decimal(1),
     brick_upgrade_4_cost: new Decimal(1000),
     brick_upgrade_4_power: new Decimal(1),
+    brick_upgrade_5_cost: new Decimal(2000),
     space_unlocked: false,
     music_on: false
 };
@@ -95,6 +105,7 @@ function setBrickDoubleTimer() {
     }
     brickdoubletimer = setInterval(doubleBrickProduction, Number(GameData.bricks_per_second_timer));
 }
+
 
 function showConfirm(message, callback) {
   const popup = document.createElement("div");
@@ -252,6 +263,8 @@ const labelFns = {
 
     BrickUpgrade4Label: () => "Get Magnets per second:\n" + shortDecimal(GameData.brick_upgrade_4_power.minus(1)) + "/s → " + shortDecimal(GameData.brick_upgrade_4_power.times(1.5).minus(1)) + "/s\n(Cost: " + shortDecimal(GameData.brick_upgrade_4_cost) + " Bricks)",
 
+    BrickUpgrade5Label: () => "Bricks Double more often:\n" + shortDecimal(GameData.bricks_per_second_timer.div(1000)) + "s → " + shortDecimal((GameData.bricks_per_second_timer.minus(250)).div(1000)) + "s\n(Cost: " + shortDecimal(GameData.brick_upgrade_5_cost) + " Bricks)",
+
   MusicLabel: () => GameData.music_on ? "🎵 Music ON" : "🎵 Music OFF"
 };
 
@@ -349,7 +362,7 @@ function spawnIronBar() {
     if (pos < screenHeight + 100) {
       requestAnimationFrame(animate);
     } else {
-      if (bar.parentNode) bar.remove();
+
     }
   }
   animate();
@@ -382,8 +395,10 @@ const DOM = {
     brickupgrade2button: $("BrickUpgrade2Button"),
     brickupgrade3button: $("BrickUpgrade3Button"),
     brickupgrade4button: $("BrickUpgrade4Button"),
+    brickupgrade5button: $("BrickUpgrade5Button"),
     closebrickmenu: $("CloseBrickMenu"),
     spacebackbutton: $("SpaceBackButton"),
+    maxupgradesbutton: $("MaxButtonUpgrades"),
     upgrade_1_button: $("Upgrade_1_Button"),
     upgrade_2_button: $("Upgrade_2_Button"),
     upgrade_3_button: $("Upgrade_3_Button"),
@@ -420,6 +435,68 @@ const DOM = {
 //////////////////////////////
 // ===== Event listeners ====
 //////////////////////////////
+
+// Botão único Max para Upgrades 1–5
+if (DOM.maxupgradesbutton) {
+  DOM.maxupgradesbutton.addEventListener("click", () => {
+    // Upgrade 1
+    while (GameData.joinhas.gte(GameData.upgrade_1_cost)) {
+      GameData.joinhas = GameData.joinhas.minus(GameData.upgrade_1_cost);
+      GameData.click_power = GameData.click_power.plus(
+        (new Decimal(1))
+          .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
+          .times(GameData.golden_upgrade_2_power)
+          .times(GameData.upgrade_4_power)
+          .times(GameData.magnet_upgrade_1_power)
+          .times(GameData.ironbarupgrade1power)
+          .times(GameData.brick_upgrade_1_power)
+      );
+      GameData.upgrade_1_cost = GameData.upgrade_1_cost.times(1.6);
+    }
+
+    // Upgrade 2
+    while (GameData.joinhas.gte(GameData.upgrade_2_cost)) {
+      GameData.joinhas = GameData.joinhas.minus(GameData.upgrade_2_cost);
+      GameData.joinhas_per_second = GameData.joinhas_per_second.plus(
+        (new Decimal(1))
+          .times(GameData.golden_joinhas.times(GameData.boostpergoldenjoinha).plus(1))
+          .times(GameData.golden_upgrade_2_power)
+          .times(GameData.magnet_upgrade_1_power)
+          .times(GameData.magnet_upgrade_4_power)
+          .times(GameData.ironbarupgrade1power)
+          .times(GameData.brick_upgrade_1_power)
+      );
+      GameData.upgrade_2_cost = GameData.upgrade_2_cost.times(1.5);
+    }
+
+    // Upgrade 3 (ilimitado)
+    while (GameData.joinhas.gte(GameData.upgrade_3_cost)) {
+      GameData.joinhas = GameData.joinhas.minus(GameData.upgrade_3_cost);
+      GameData.upgrade_1_cost = GameData.upgrade_1_cost.div(4);
+      GameData.upgrade_2_cost = GameData.upgrade_2_cost.div(4);
+      GameData.upgrade_3_cost = GameData.upgrade_3_cost.times(25);
+    }
+
+    // Upgrade 4 (só 1 vez, preço fixo)
+    if (GameData.joinhas.gte(new Decimal(10480000)) && GameData.upgrade_4_cap === 0) {
+      GameData.joinhas = GameData.joinhas.minus(new Decimal(10480000));
+      GameData.upgrade_4_cap = 1;
+      GameData.upgrade_4_power = GameData.upgrade_4_power.times(25);
+      GameData.click_power = GameData.click_power.times(GameData.upgrade_4_power);
+    }
+
+    // Upgrade 5 (até limite 20)
+    while (GameData.joinhas.gte(GameData.upgrade_5_cost) && GameData.upgrade_5_limit.lt(20)) {
+      GameData.joinhas = GameData.joinhas.minus(GameData.upgrade_5_cost);
+      GameData.upgrade_5_power = GameData.upgrade_5_power.plus(0.001);
+      GameData.upgrade_5_limit = GameData.upgrade_5_limit.plus(1);
+      GameData.upgrade_5_cost = GameData.upgrade_5_cost.times(10);
+    }
+
+    update_golden_joinha_earn();
+    update_screen();
+  });
+}
 
 // Menus
 if (DOM.upgradesMenuButton && DOM.upgradesMenuCloseButton) {
@@ -801,6 +878,17 @@ if (DOM.brickupgrade4button) {
         purchase("bricks", "brick_upgrade_4_cost", () => {
             GameData.brick_upgrade_4_cost = GameData.brick_upgrade_4_cost.times(3.14);
             GameData.brick_upgrade_4_power = GameData.brick_upgrade_4_power.times(1.5);
+        });
+    });
+};
+if (DOM.brickupgrade5button) {
+    DOM.brickupgrade5button.addEventListener("click", () => {
+        purchase("bricks", "brick_upgrade_5_cost", () => {
+            if (GameData.bricks_per_second_timer.gt(5)) {
+            GameData.brick_upgrade_5_cost = GameData.brick_upgrade_5_cost.times(25);
+            GameData.bricks_per_second_timer = GameData.bricks_per_second_timer.minus(250);
+            setBrickDoubleTimer();
+            };
         });
     });
 };
